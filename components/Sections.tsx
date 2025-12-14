@@ -5,7 +5,14 @@ import { useState, useEffect } from 'react';
 export default function DesignStronLanding() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+const [form, setForm] = useState({
+  name: '',
+  email: '',
+  phone: '',
+  socials: '',
+  message: ''
+});
+
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(true);
@@ -39,7 +46,13 @@ export default function DesignStronLanding() {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     alert('Dziękujemy za wiadomość! Skontaktujemy się z Tobą w ciągu 24 godzin.');
-    setForm({ name: '', email: '', message: '' });
+    setForm({
+  name: '',
+  email: '',
+  phone: '',
+  socials: '',
+  message: ''
+});
     setIsSubmitting(false);
   };
 
@@ -577,74 +590,92 @@ export default function DesignStronLanding() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className={`space-y-6 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}>
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Imię i nazwisko <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                value={form.name}
-                onChange={(e) => setForm({...form, name: e.target.value})}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all transform focus:scale-[1.02]`}
-                placeholder="Jan Kowalski"
-              />
-            </div>
+          <form
+  onSubmit={handleSubmit}
+  className={`space-y-6 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}
+>
+  {/* IMIĘ */}
+  <div className="space-y-2">
+    <label className={`block text-sm font-bold ${textPrimary}`}>
+      Imię i nazwisko <span className="text-red-500">*</span>
+    </label>
+    <input
+      required
+      value={form.name}
+      onChange={(e) => setForm({ ...form, name: e.target.value })}
+      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+      placeholder="Jan Kowalski"
+    />
+  </div>
 
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({...form, email: e.target.value})}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all transform focus:scale-[1.02]`}
-                placeholder="jan@firma.pl"
-              />
-            </div>
+  {/* EMAIL */}
+  <div className="space-y-2">
+    <label className={`block text-sm font-bold ${textPrimary}`}>
+      Email <span className="text-red-500">*</span>
+    </label>
+    <input
+      required
+      type="email"
+      value={form.email}
+      onChange={(e) => setForm({ ...form, email: e.target.value })}
+      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+      placeholder="jan@firma.pl"
+    />
+  </div>
 
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Opisz swoje potrzeby <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                required
-                rows={6}
-                value={form.message}
-                onChange={(e) => setForm({...form, message: e.target.value})}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none transform focus:scale-[1.02]`}
-                placeholder="Potrzebuję strony internetowej dla mojej firmy zajmującej się..."
-              />
-            </div>
+  {/* TELEFON – OBOWIĄZKOWY */}
+  <div className="space-y-2">
+    <label className={`block text-sm font-bold ${textPrimary}`}>
+      Numer telefonu <span className="text-red-500">*</span>
+    </label>
+    <input
+      required
+      type="tel"
+      value={form.phone}
+      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+      placeholder="+48 123 456 789"
+    />
+  </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group w-full relative px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed text-white"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative flex items-center justify-center gap-2">
-                {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Wysyłanie...
-                  </>
-                ) : (
-                  <>
-                    Wyślij zapytanie
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </>
-                )}
-              </span>
-            </button>
-          </form>
+  {/* SOCIAL MEDIA – OPCJONALNE */}
+  <div className="space-y-2">
+    <label className={`block text-sm font-bold ${textPrimary}`}>
+      Social media (opcjonalnie)
+    </label>
+    <input
+      value={form.socials}
+      onChange={(e) => setForm({ ...form, socials: e.target.value })}
+      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+      placeholder="Facebook / Instagram / LinkedIn / strona"
+    />
+  </div>
+
+  {/* WIADOMOŚĆ */}
+  <div className="space-y-2">
+    <label className={`block text-sm font-bold ${textPrimary}`}>
+      Opisz swoje potrzeby <span className="text-red-500">*</span>
+    </label>
+    <textarea
+      required
+      rows={6}
+      value={form.message}
+      onChange={(e) => setForm({ ...form, message: e.target.value })}
+      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none`}
+      placeholder="Potrzebuję strony internetowej dla mojej firmy..."
+    />
+  </div>
+
+  {/* BUTTON */}
+  <button
+    type="submit"
+    disabled={isSubmitting}
+    className="w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-all disabled:opacity-50"
+  >
+    {isSubmitting ? 'Wysyłanie...' : 'Wyślij zapytanie'}
+  </button>
+</form>
+
         </div>
       </section>
 
