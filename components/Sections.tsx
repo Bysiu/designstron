@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ReviewsCarousel from './ReviewsCarousel';
+import Link from 'next/link';
 
 export default function DesignStronLanding() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,7 +44,6 @@ const [form, setForm] = useState({
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Symulacja wysyłania
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     alert('Dziękujemy za wiadomość! Skontaktujemy się z Tobą w ciągu 24 godzin.');
@@ -243,7 +244,7 @@ const [form, setForm] = useState({
             {['Oferta', 'Portfolio', 'Kontakt'].map((item) => (
               <a
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={item === 'Portfolio' ? '/portfolio' : `#${item.toLowerCase()}`}
                 className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
               >
                 {item}
@@ -251,7 +252,6 @@ const [form, setForm] = useState({
               </a>
             ))}
             
-            {/* Theme Toggle */}
             <button
               onClick={() => setIsDark(!isDark)}
               className={`p-3 rounded-xl ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-gray-100'} transition-all duration-300 shadow-lg`}
@@ -478,7 +478,6 @@ const [form, setForm] = useState({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-            {/* Connection Line */}
             <div className="hidden md:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20" />
 
             {steps.map((step, i) => (
@@ -502,23 +501,35 @@ const [form, setForm] = useState({
         </div>
       </section>
 
-      {/* Portfolio Teaser */}
-      <section id="portfolio" className="relative py-32 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className={`text-5xl md:text-6xl font-black mb-8 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
-            Nasze realizacje
-          </h2>
-          <p className={`text-xl ${textSecondary} mb-16 max-w-3xl mx-auto`}>
-            Wkrótce pokażemy nasze najlepsze projekty. Pracujemy nad portfolio, 
-            które zaprezentuje różnorodność naszych realizacji.
-          </p>
-          
-          <div className={`relative h-96 ${isDark ? 'bg-gradient-to-br from-slate-900/50 to-slate-800/50 border-slate-700' : 'bg-gradient-to-br from-white/50 to-gray-100/50 border-gray-300'} rounded-3xl border flex items-center justify-center overflow-hidden group`}>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative z-10">
-              <div className="text-7xl mb-6 animate-bounce">🎨</div>
-              <p className={`text-2xl ${textSecondary} font-bold`}>Coming Soon...</p>
-            </div>
+      {/* Reviews Carousel */}
+      <section className="relative py-32 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+              Co mówią nasi klienci
+            </h2>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+              Dołącz do grona zadowolonych firm, które zaufały naszemu doświadczeniu 
+              i profesjonalizmowi w tworzeniu stron internetowych.
+            </p>
+          </div>
+
+          <ReviewsCarousel 
+            isDark={isDark}
+            textSecondary={textSecondary}
+            textPrimary={textPrimary}
+          />
+
+          <div className="text-center mt-16">
+            <Link
+              href="/portfolio"
+              className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 text-white"
+            >
+              Zobacz pełne portfolio
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -594,7 +605,6 @@ const [form, setForm] = useState({
   onSubmit={handleSubmit}
   className={`space-y-6 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}
 >
-  {/* IMIĘ */}
   <div className="space-y-2">
     <label className={`block text-sm font-bold ${textPrimary}`}>
       Imię i nazwisko <span className="text-red-500">*</span>
@@ -608,7 +618,6 @@ const [form, setForm] = useState({
     />
   </div>
 
-  {/* EMAIL */}
   <div className="space-y-2">
     <label className={`block text-sm font-bold ${textPrimary}`}>
       Email <span className="text-red-500">*</span>
@@ -623,7 +632,6 @@ const [form, setForm] = useState({
     />
   </div>
 
-  {/* TELEFON – OBOWIĄZKOWY */}
   <div className="space-y-2">
     <label className={`block text-sm font-bold ${textPrimary}`}>
       Numer telefonu <span className="text-red-500">*</span>
@@ -638,7 +646,6 @@ const [form, setForm] = useState({
     />
   </div>
 
-  {/* SOCIAL MEDIA – OPCJONALNE */}
   <div className="space-y-2">
     <label className={`block text-sm font-bold ${textPrimary}`}>
       Social media (opcjonalnie)
@@ -651,7 +658,6 @@ const [form, setForm] = useState({
     />
   </div>
 
-  {/* WIADOMOŚĆ */}
   <div className="space-y-2">
     <label className={`block text-sm font-bold ${textPrimary}`}>
       Opisz swoje potrzeby <span className="text-red-500">*</span>
@@ -666,7 +672,6 @@ const [form, setForm] = useState({
     />
   </div>
 
-  {/* BUTTON */}
   <button
     type="submit"
     disabled={isSubmitting}
@@ -722,7 +727,7 @@ const [form, setForm] = useState({
                 {['Oferta', 'Portfolio', 'Kontakt'].map((item) => (
                   <a
                     key={item}
-                    href={`#${item.toLowerCase()}`}
+                    href={item === 'Portfolio' ? '/portfolio' : `#${item.toLowerCase()}`}
                     className={`block ${textSecondary} hover:text-blue-400 transition-colors`}
                   >
                     {item}

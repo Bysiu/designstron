@@ -1,0 +1,96 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "companyName": "Kancelaria Prawna Kowalski",
+      "rating": 5,
+      "reviewText": "Profesjonalna obsługa, szybka realizacja i świetny efekt końcowy. Strona wygląda nowocześnie i przyciąga klientów. Polecam!",
+      "websiteUrl": "https://example-law.pl",
+      "websiteImage": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop",
+      "projectDescription": "Elegancka strona kancelarii prawnej z systemem rezerwacji konsultacji i prezentacją zespołu."
+    },
+    {
+      "id": 2,
+      "companyName": "Salon Fryzjerski Glamour",
+      "rating": 5,
+      "reviewText": "Fantastyczna współpraca! Strona idealnie oddaje charakter naszego salonu. Klienci chwalą łatwość rezerwacji online.",
+      "websiteUrl": "https://example-salon.pl",
+      "websiteImage": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
+      "projectDescription": "Stylowa strona salonu fryzjerskiego z galerią realizacji, cennikiem i systemem bookingu."
+    },
+    {
+      "id": 3,
+      "companyName": "Restauracja Smaki Italii",
+      "rating": 5,
+      "reviewText": "Strona przekroczyła nasze oczekiwania! Piękna prezentacja menu, łatwa nawigacja. Zamówienia online wzrosły o 40%.",
+      "websiteUrl": "https://example-restaurant.pl",
+      "websiteImage": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop",
+      "projectDescription": "Elegancka strona restauracji z interaktywnym menu, galерią dań i systemem rezerwacji stolików."
+    },
+    {
+      "id": 4,
+      "companyName": "Studio Fitness Max",
+      "rating": 5,
+      "reviewText": "Rewelacyjna strona! Dynamiczna, nowoczesna i funkcjonalna. System zapisów na zajęcia działa bez zarzutu.",
+      "websiteUrl": "https://example-fitness.pl",
+      "websiteImage": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop",
+      "projectDescription": "Energetyczna strona siłowni z planem zajęć, prezentacją trenerów i systemem zapisu online."
+    },
+    {
+      "id": 5,
+      "companyName": "Biuro Rachunkowe ProFin",
+      "rating": 5,
+      "reviewText": "Profesjonalna strona, która buduje zaufanie. Liczba zapytań od nowych klientów wzrosła dwukrotnie.",
+      "websiteUrl": "https://example-accounting.pl",
+      "websiteImage": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop",
+      "projectDescription": "Solidna strona biura rachunkowego z kalkulatorem kosztów, opisem usług i formularzem kontaktowym."
+    },
+    {
+      "id": 6,
+      "companyName": "Kwiaciarnia Róża",
+      "rating": 5,
+      "reviewText": "Piękna strona, która idealnie oddaje ducha naszej kwiaciarni. Klienci uwielbiają galerię bukietów!",
+      "websiteUrl": "https://example-flowers.pl",
+      "websiteImage": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&h=600&fit=crop",
+      "projectDescription": "Kolorowa strona kwiaciarni z galerią kompozycji, konfiguratorem bukietów i dostawą."
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "companyName": "Kancelaria Prawna Kowalski",
+      "rating": 5,
+      "reviewText": "Profesjonalna obsługa, szybka realizacja i świetny efekt końcowy. Strona wygląda nowocześnie i przyciąga klientów. Polecam!"
+    },
+    {
+      "id": 2,
+      "companyName": "Salon Fryzjerski Glamour",
+      "rating": 5,
+      "reviewText": "Fantastyczna współpraca! Strona idealnie oddaje charakter naszego salonu. Klienci chwalą łatwość rezerwacji online."
+    },
+    {
+      "id": 3,
+      "companyName": "Restauracja Smaki Italii",
+      "rating": 5,
+      "reviewText": "Strona przekroczyła nasze oczekiwania! Piękna prezentacja menu, łatwa nawigacja. Zamówienia online wzrosły o 40%."
+    },
+    {
+      "id": 4,
+      "companyName": "Studio Fitness Max",
+      "rating": 5,
+      "reviewText": "Rewelacyjna strona! Dynamiczna, nowoczesna i funkcjonalna. System zapisów na zajęcia działa bez zarzutu."
+    },
+    {
+      "id": 5,
+      "companyName": "Biuro Rachunkowe ProFin",
+      "rating": 5,
+      "reviewText": "Profesjonalna strona, która buduje zaufanie. Liczba zapytań od nowych klientów wzrosła dwukrotnie."
+    },
+    {
+      "id": 6,
+      "companyName": "Kwiaciarnia Róża",
+      "rating": 5,
+      "reviewText": "Piękna strona, która idealnie oddaje ducha naszej kwiaciarni. Klienci uwielbiają galerię bukietów!"
+    }
+  ]
+}
