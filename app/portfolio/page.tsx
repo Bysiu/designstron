@@ -2,27 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import portfolioData from '@/components/portfolioData.json';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 export default function PortfolioPage() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('scroll', handleScroll);
     window.addEventListener('mousemove', handleMouseMove);
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
@@ -59,65 +54,7 @@ export default function PortfolioPage() {
         <div className={`absolute inset-0 ${isDark ? 'opacity-30' : 'opacity-20'} bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]`} />
       </div>
 
-      {/* Navbar */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled 
-          ? isDark 
-            ? 'bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-purple-500/10' 
-            : 'bg-white/80 backdrop-blur-2xl shadow-xl'
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="relative group">
-            <span className={`font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}>
-              DesignStron.pl
-            </span>
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
-          </Link>
-          
-          <div className="flex items-center gap-8">
-            <Link
-              href="/"
-              className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-            >
-              Strona główna
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-            </Link>
-            
-            <Link
-              href="/#oferta"
-              className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-            >
-              Oferta
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-            </Link>
-            
-            <Link
-              href="/#kontakt"
-              className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-            >
-              Kontakt
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-            </Link>
-            
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className={`p-3 rounded-xl ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-gray-100'} transition-all duration-300 shadow-lg`}
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar isDark={isDark} setIsDark={setIsDark} currentPage="portfolio" />
 
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center pt-32 pb-20">
@@ -126,13 +63,13 @@ export default function PortfolioPage() {
             <span className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>🎨 Nasze realizacje</span>
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-black mb-6 leading-tight">
-            <span className={`block ${isDark ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100' : 'bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900'} bg-clip-text text-transparent`}>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black mb-6 leading-tight">
+            <span className={`block ${isDark ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100' : 'bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900'} bg-clip-text text-transparent pb-2`}>
               Portfolio
             </span>
           </h1>
           
-          <p className={`text-xl md:text-2xl ${textSecondary} max-w-3xl mx-auto leading-relaxed`}>
+          <p className={`text-lg sm:text-xl md:text-2xl ${textSecondary} max-w-3xl mx-auto leading-relaxed px-4`}>
             Zobacz projekty, które stworzyliśmy dla naszych klientów. 
             Każda strona to unikalne rozwiązanie dopasowane do potrzeb biznesu.
           </p>
@@ -184,7 +121,7 @@ export default function PortfolioPage() {
                     ))}
                   </div>
 
-                  <h3 className={`font-bold text-2xl mb-3 ${textPrimary}`}>
+                  <h3 className={`font-bold text-2xl mb-3 ${textPrimary} pb-1`}>
                     {project.companyName}
                   </h3>
                   
@@ -210,10 +147,10 @@ export default function PortfolioPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-20" />
           
           <div className={`relative ${cardBg} backdrop-blur-sm p-16 rounded-3xl border`}>
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Stwórzmy razem Twoją stronę
             </h2>
-            <p className={`text-xl ${textPrimary} mb-10 max-w-2xl mx-auto`}>
+            <p className={`text-xl ${textPrimary} mb-10 max-w-2xl mx-auto px-4`}>
               Dołącz do grona zadowolonych klientów. Otrzymaj darmową wycenę w 24h.
             </p>
             <Link
@@ -226,57 +163,7 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className={`relative py-16 px-6 ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            <div>
-              <h3 className="font-bold text-2xl mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                DesignStron.pl
-              </h3>
-              <p className={`${textSecondary} leading-relaxed`}>
-                Nowoczesne strony internetowe dla małych firm i lokalnych biznesów. 
-                Pomagamy budować silną obecność w sieci.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Szybkie linki</h4>
-              <div className="space-y-2">
-                {[
-                  { name: 'Strona główna', href: '/' },
-                  { name: 'Oferta', href: '/#oferta' },
-                  { name: 'Portfolio', href: '/portfolio' },
-                  { name: 'Kontakt', href: '/#kontakt' }
-                ].map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`block ${textSecondary} hover:text-blue-400 transition-colors`}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Kontakt</h4>
-              <div className={`space-y-2 ${textSecondary}`}>
-                <p>📧 kontakt@designstron.pl</p>
-                <p>📱 +48 123 456 789</p>
-                <p>⏰ Pn-Pt: 9:00-17:00</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className={`pt-8 ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t text-center`}>
-            <p className={textSecondary}>
-              © {new Date().getFullYear()} <span className={`font-bold ${textPrimary}`}>DesignStron.pl</span> - Wszystkie prawa zastrzeżone
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer isDark={isDark} currentPage="portfolio" />
     </div>
   );
 }

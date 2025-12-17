@@ -1,19 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ReviewsCarousel from './ReviewsCarousel';
+import ReviewsCarousel from '@/components/ReviewsCarousel';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 export default function DesignStronLanding() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-const [form, setForm] = useState({
-  name: '',
-  email: '',
-  phone: '',
-  socials: '',
-  message: ''
-});
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    socials: '',
+    message: ''
+  });
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
@@ -23,19 +24,13 @@ const [form, setForm] = useState({
   useEffect(() => {
     setMounted(true);
     
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('scroll', handleScroll);
     window.addEventListener('mousemove', handleMouseMove);
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
@@ -48,12 +43,12 @@ const [form, setForm] = useState({
     
     alert('Dziękujemy za wiadomość! Skontaktujemy się z Tobą w ciągu 24 godzin.');
     setForm({
-  name: '',
-  email: '',
-  phone: '',
-  socials: '',
-  message: ''
-});
+      name: '',
+      email: '',
+      phone: '',
+      socials: '',
+      message: ''
+    });
     setIsSubmitting(false);
   };
 
@@ -224,52 +219,7 @@ const [form, setForm] = useState({
         <div className={`absolute inset-0 ${isDark ? 'opacity-30' : 'opacity-20'} bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]`} />
       </div>
 
-      {/* Navbar */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled 
-          ? isDark 
-            ? 'bg-slate-900/80 backdrop-blur-2xl shadow-2xl shadow-purple-500/10' 
-            : 'bg-white/80 backdrop-blur-2xl shadow-xl'
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="#" className="relative group">
-            <span className={`font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}>
-              DesignStron.pl
-            </span>
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
-          </a>
-          
-          <div className="flex items-center gap-8">
-            {['Oferta', 'Portfolio', 'Kontakt'].map((item) => (
-              <a
-                key={item}
-                href={item === 'Portfolio' ? '/portfolio' : `#${item.toLowerCase()}`}
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </a>
-            ))}
-            
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className={`p-3 rounded-xl ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-gray-100'} transition-all duration-300 shadow-lg`}
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar isDark={isDark} setIsDark={setIsDark} currentPage="home" />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
@@ -293,26 +243,26 @@ const [form, setForm] = useState({
             <span className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>🚀 Profesjonalne strony internetowe</span>
           </div>
           
-          <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight animate-fade-in-up">
-            <span className={`block ${isDark ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100' : 'bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900'} bg-clip-text text-transparent`}>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight animate-fade-in-up">
+            <span className={`block ${isDark ? 'bg-gradient-to-r from-white via-blue-100 to-purple-100' : 'bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900'} bg-clip-text text-transparent pb-2`}>
               Nowoczesne strony
             </span>
-            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
+            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse pb-2">
               które sprzedają
             </span>
           </h1>
           
-          <p className={`text-xl md:text-2xl ${textSecondary} mb-12 leading-relaxed max-w-4xl mx-auto animate-fade-in-up`} style={{ animationDelay: '0.2s' }}>
+          <p className={`text-lg sm:text-xl md:text-2xl ${textSecondary} mb-12 leading-relaxed max-w-4xl mx-auto animate-fade-in-up px-4`} style={{ animationDelay: '0.2s' }}>
             Tworzymy strony internetowe, które przyciągają uwagę, budują zaufanie i przekształcają odwiedzających w klientów. Bez zbędnych dodatków – konkretnie i skutecznie. Każdy projekt to połączenie najnowszych technologii z unikalnym designem.
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-up px-4" style={{ animationDelay: '0.4s' }}>
             <a
               href="#kontakt"
               className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl font-bold text-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50 text-white"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative flex items-center gap-2">
+              <span className="relative flex items-center justify-center gap-2">
                 Darmowa wycena
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -335,10 +285,10 @@ const [form, setForm] = useState({
               { num: '100%', label: 'Satysfakcji' }
             ].map((stat, i) => (
               <div key={i} className="text-center group">
-                <div className="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:scale-110 transition-transform">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:scale-110 transition-transform">
                   {stat.num}
                 </div>
-                <div className={`${textSecondary} mt-2`}>{stat.label}</div>
+                <div className={`${textSecondary} mt-2 text-sm sm:text-base`}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -356,10 +306,10 @@ const [form, setForm] = useState({
       <section className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Dlaczego warto z nami współpracować?
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
               Stawiamy na jakość, szybkość i rezultaty. Każdy projekt traktujemy indywidualnie, 
               dbając o najdrobniejsze szczegóły i Twoje zadowolenie.
             </p>
@@ -378,7 +328,7 @@ const [form, setForm] = useState({
                   <div className="text-6xl mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500">
                     {benefit.icon}
                   </div>
-                  <h3 className={`font-bold text-2xl mb-4 ${textPrimary} group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all`}>
+                  <h3 className={`font-bold text-2xl mb-4 ${textPrimary} group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all pb-1`}>
                     {benefit.title}
                   </h3>
                   <p className={`${textSecondary} leading-relaxed`}>{benefit.description}</p>
@@ -395,10 +345,10 @@ const [form, setForm] = useState({
       <section id="oferta" className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Nasza oferta
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
               Wybierz pakiet idealny dla Twojego biznesu. Każda oferta jest w pełni konfigurowalna 
               i możemy ją dostosować do Twoich indywidualnych potrzeb.
             </p>
@@ -424,7 +374,7 @@ const [form, setForm] = useState({
 
                 <div className="text-5xl mb-6">{offer.icon}</div>
                 
-                <h3 className={`font-black text-3xl mb-4 ${offer.featured ? 'text-white' : textPrimary}`}>{offer.title}</h3>
+                <h3 className={`font-black text-3xl mb-4 ${offer.featured ? 'text-white' : textPrimary} pb-1`}>{offer.title}</h3>
                 
                 <div className="mb-6">
                   <span className={`text-6xl font-black ${offer.featured ? 'text-white' : textPrimary}`}>
@@ -468,10 +418,10 @@ const [form, setForm] = useState({
       <section className="relative py-32 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Jak wygląda współpraca
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
               Prosty i przejrzysty proces w 4 krokach. Dbamy o transparentność 
               i regularną komunikację na każdym etapie realizacji.
             </p>
@@ -491,7 +441,7 @@ const [form, setForm] = useState({
                   </div>
                 </div>
                 
-                <h3 className={`font-bold text-2xl mb-3 ${textPrimary} group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all`}>
+                <h3 className={`font-bold text-2xl mb-3 ${textPrimary} group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all pb-1`}>
                   {step.title}
                 </h3>
                 <p className={`${textSecondary} leading-relaxed`}>{step.desc}</p>
@@ -505,10 +455,10 @@ const [form, setForm] = useState({
       <section className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Co mówią nasi klienci
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
               Dołącz do grona zadowolonych firm, które zaufały naszemu doświadczeniu 
               i profesjonalizmowi w tworzeniu stron internetowych.
             </p>
@@ -538,10 +488,10 @@ const [form, setForm] = useState({
       <section className="relative py-32 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Najczęstsze pytania
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
               Wszystko co musisz wiedzieć o naszych usługach. Jeśli nie znajdziesz 
               odpowiedzi na swoje pytanie, skontaktuj się z nami bezpośrednio.
             </p>
@@ -592,94 +542,94 @@ const [form, setForm] = useState({
       <section id="kontakt" className="relative py-32 px-6">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Darmowa wycena
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto`}>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
               Skontaktuj się z nami – odpowiemy w 24h. Opowiedz nam o swoim projekcie, 
               a my przygotujemy spersonalizowaną ofertę.
             </p>
           </div>
 
           <form
-  onSubmit={handleSubmit}
-  className={`space-y-6 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}
->
-  <div className="space-y-2">
-    <label className={`block text-sm font-bold ${textPrimary}`}>
-      Imię i nazwisko <span className="text-red-500">*</span>
-    </label>
-    <input
-      required
-      value={form.name}
-      onChange={(e) => setForm({ ...form, name: e.target.value })}
-      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-      placeholder="Jan Kowalski"
-    />
-  </div>
+            onSubmit={handleSubmit}
+            className={`space-y-6 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}
+          >
+            <div className="space-y-2">
+              <label className={`block text-sm font-bold ${textPrimary}`}>
+                Imię i nazwisko <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+                placeholder="Jan Kowalski"
+              />
+            </div>
 
-  <div className="space-y-2">
-    <label className={`block text-sm font-bold ${textPrimary}`}>
-      Email <span className="text-red-500">*</span>
-    </label>
-    <input
-      required
-      type="email"
-      value={form.email}
-      onChange={(e) => setForm({ ...form, email: e.target.value })}
-      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-      placeholder="jan@firma.pl"
-    />
-  </div>
+            <div className="space-y-2">
+              <label className={`block text-sm font-bold ${textPrimary}`}>
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+                placeholder="jan@firma.pl"
+              />
+            </div>
 
-  <div className="space-y-2">
-    <label className={`block text-sm font-bold ${textPrimary}`}>
-      Numer telefonu <span className="text-red-500">*</span>
-    </label>
-    <input
-      required
-      type="tel"
-      value={form.phone}
-      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-      placeholder="+48 123 456 789"
-    />
-  </div>
+            <div className="space-y-2">
+              <label className={`block text-sm font-bold ${textPrimary}`}>
+                Numer telefonu <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+                placeholder="+48 123 456 789"
+              />
+            </div>
 
-  <div className="space-y-2">
-    <label className={`block text-sm font-bold ${textPrimary}`}>
-      Social media (opcjonalnie)
-    </label>
-    <input
-      value={form.socials}
-      onChange={(e) => setForm({ ...form, socials: e.target.value })}
-      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-      placeholder="Facebook / Instagram / LinkedIn / strona"
-    />
-  </div>
+            <div className="space-y-2">
+              <label className={`block text-sm font-bold ${textPrimary}`}>
+                Social media (opcjonalnie)
+              </label>
+              <input
+                value={form.socials}
+                onChange={(e) => setForm({ ...form, socials: e.target.value })}
+                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
+                placeholder="Facebook / Instagram / LinkedIn / strona"
+              />
+            </div>
 
-  <div className="space-y-2">
-    <label className={`block text-sm font-bold ${textPrimary}`}>
-      Opisz swoje potrzeby <span className="text-red-500">*</span>
-    </label>
-    <textarea
-      required
-      rows={6}
-      value={form.message}
-      onChange={(e) => setForm({ ...form, message: e.target.value })}
-      className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none`}
-      placeholder="Potrzebuję strony internetowej dla mojej firmy..."
-    />
-  </div>
+            <div className="space-y-2">
+              <label className={`block text-sm font-bold ${textPrimary}`}>
+                Opisz swoje potrzeby <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                required
+                rows={6}
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none`}
+                placeholder="Potrzebuję strony internetowej dla mojej firmy..."
+              />
+            </div>
 
-  <button
-    type="submit"
-    disabled={isSubmitting}
-    className="w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-all disabled:opacity-50"
-  >
-    {isSubmitting ? 'Wysyłanie...' : 'Wyślij zapytanie'}
-  </button>
-</form>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-all disabled:opacity-50"
+            >
+              {isSubmitting ? 'Wysyłanie...' : 'Wyślij zapytanie'}
+            </button>
+          </form>
 
         </div>
       </section>
@@ -690,10 +640,10 @@ const [form, setForm] = useState({
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-20" />
           
           <div className={`relative ${cardBg} backdrop-blur-sm p-16 rounded-3xl border`}>
-            <h2 className={`text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent`}>
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
               Gotowy na nową stronę?
             </h2>
-            <p className={`text-xl ${textPrimary} mb-10 max-w-2xl mx-auto`}>
+            <p className={`text-xl ${textPrimary} mb-10 max-w-2xl mx-auto px-4`}>
               Skontaktuj się z nami już dziś i otrzymaj darmową wycenę w 24h. 
               Razem stworzymy stronę, która wyróżni Twój biznes w sieci.
             </p>
@@ -707,52 +657,7 @@ const [form, setForm] = useState({
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className={`relative py-16 px-6 ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            <div>
-              <h3 className="font-bold text-2xl mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                DesignStron.pl
-              </h3>
-              <p className={`${textSecondary} leading-relaxed`}>
-                Nowoczesne strony internetowe dla małych firm i lokalnych biznesów. 
-                Pomagamy budować silną obecność w sieci.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Szybkie linki</h4>
-              <div className="space-y-2">
-                {['Oferta', 'Portfolio', 'Kontakt'].map((item) => (
-                  <a
-                    key={item}
-                    href={item === 'Portfolio' ? '/portfolio' : `#${item.toLowerCase()}`}
-                    className={`block ${textSecondary} hover:text-blue-400 transition-colors`}
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Kontakt</h4>
-              <div className={`space-y-2 ${textSecondary}`}>
-                <p>📧 kontakt@designstron.pl</p>
-                <p>📱 +48 123 456 789</p>
-                <p>⏰ Pn-Pt: 9:00-17:00</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className={`pt-8 ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t text-center`}>
-            <p className={textSecondary}>
-              © {new Date().getFullYear()} <span className={`font-bold ${textPrimary}`}>DesignStron.pl</span> - Wszystkie prawa zastrzeżone
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer isDark={isDark} currentPage="home" />
 
       <style jsx>{`
         @keyframes fade-in {
