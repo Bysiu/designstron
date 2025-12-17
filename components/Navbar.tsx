@@ -8,6 +8,7 @@ type NavbarProps = ThemeToggleProps & {
 
 export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,9 +23,17 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
     ? 'bg-slate-900/95 backdrop-blur-2xl shadow-2xl shadow-purple-500/10' 
     : 'bg-white/95 backdrop-blur-2xl shadow-xl';
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      isScrolled ? bgClass : 'bg-transparent'
+      isScrolled || isMobileMenuOpen ? bgClass : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="relative group">
@@ -34,60 +43,63 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
           <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
         </Link>
         
-        <div className="flex items-center gap-8">
-          {currentPage === 'home' ? (
-            <>
-              <a
-                href="#oferta"
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                Oferta
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </a>
-              <Link
-                href="/portfolio"
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                Portfolio
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </Link>
-              <a
-                href="#kontakt"
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                Kontakt
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </a>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/"
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                Strona główna
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </Link>
-              <Link
-                href="/#oferta"
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                Oferta
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </Link>
-              <Link
-                href="/#kontakt"
-                className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group hidden md:block`}
-              >
-                Kontakt
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
-              </Link>
-            </>
-          )}
+        <div className="flex items-center gap-4">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {currentPage === 'home' ? (
+              <>
+                <a
+                  href="#oferta"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Oferta
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </a>
+                <Link
+                  href="/portfolio"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Portfolio
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </Link>
+                <a
+                  href="#kontakt"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Kontakt
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </a>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Strona główna
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </Link>
+                <Link
+                  href="/#oferta"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Oferta
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </Link>
+                <Link
+                  href="/#kontakt"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Kontakt
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </Link>
+              </>
+            )}
+          </div>
           
           <button
             onClick={() => setIsDark(!isDark)}
-            className={`p-3 rounded-xl ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-gray-100'} transition-all duration-300 shadow-lg`}
+            className={`p-2 rounded-xl ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-white hover:bg-gray-100'} transition-all duration-300 shadow-lg`}
             aria-label="Toggle theme"
           >
             {isDark ? (
@@ -100,6 +112,99 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
               </svg>
             )}
           </button>
+
+          {/* Mobile menu button */}
+          <button 
+            className="md:hidden p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 ml-1"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} ${isDark ? 'bg-slate-900/95' : 'bg-white/95'} backdrop-blur-lg border-t ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+        <div className="px-6 py-4 space-y-4">
+          {currentPage === 'home' ? (
+            <>
+              <a
+                href="#oferta"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Oferta
+                </div>
+              </a>
+              <Link
+                href="/portfolio"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Portfolio
+                </div>
+              </Link>
+              <a
+                href="#kontakt"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Kontakt
+                </div>
+              </a>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Strona główna
+                </div>
+              </Link>
+              <Link
+                href="/#oferta"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Oferta
+                </div>
+              </Link>
+              <Link
+                href="/portfolio"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Portfolio
+                </div>
+              </Link>
+              <Link
+                href="/#kontakt"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Kontakt
+                </div>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
