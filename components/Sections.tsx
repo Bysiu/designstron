@@ -40,22 +40,34 @@ const [form, setForm] = useState({
     };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    alert('Dziękujemy za wiadomość! Skontaktujemy się z Tobą w ciągu 24 godzin.');
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+
+    if (!res.ok) throw new Error();
+
+    alert('Dziękujemy! Wiadomość została wysłana.');
     setForm({
-  name: '',
-  email: '',
-  phone: '',
-  socials: '',
-  message: ''
-});
+      name: '',
+      email: '',
+      phone: '',
+      socials: '',
+      message: '',
+    });
+  } catch {
+    alert('Błąd wysyłania formularza');
+  } finally {
     setIsSubmitting(false);
-  };
+  }
+};
+
 
   const benefits = [
     {
