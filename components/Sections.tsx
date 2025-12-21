@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ReviewsCarousel from '@/components/ReviewsCarousel';
-import Navbar from '@/components/Navbar';
+import NavbarAuth from '@/components/NavbarAuth';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 
@@ -219,7 +219,7 @@ export default function DesignStronLanding() {
         <div className={`absolute inset-0 ${isDark ? 'opacity-30' : 'opacity-20'} bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]`} />
       </div>
 
-      <Navbar isDark={isDark} setIsDark={setIsDark} currentPage="home" />
+      <NavbarAuth isDark={isDark} setIsDark={setIsDark} currentPage="home" />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
@@ -391,8 +391,8 @@ export default function DesignStronLanding() {
                   ))}
                 </ul>
 
-                <a
-                  href="#kontakt"
+                <Link
+                  href="/auth/signin"
                   className={`block text-center py-4 rounded-2xl font-bold transition-all duration-300 ${
                     offer.featured
                       ? 'bg-white text-purple-600 hover:bg-blue-50 hover:scale-105'
@@ -400,7 +400,7 @@ export default function DesignStronLanding() {
                   }`}
                 >
                   Wybierz pakiet
-                </a>
+                </Link>
               </div>
             ))}
           </div>
@@ -530,99 +530,31 @@ export default function DesignStronLanding() {
           </div>
         </div>
       </section>
-
-      {/* Contact */}
       <section id="kontakt" className="relative py-32 px-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-16">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="mb-16">
             <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
-              Darmowa wycena
+              Zamów swoją stronę
             </h2>
-            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
-              Skontaktuj się z nami – odpowiemy w 24h. Opowiedz nam o swoim projekcie, 
-              a my przygotujemy spersonalizowaną ofertę.
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4 mb-8`}>
+              Gotów na nową stronę internetową? Zaloguj się i zamów ją w kilku prostych krokach.
             </p>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className={`space-y-6 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}
-          >
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Imię i nazwisko <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-                placeholder="Jan Kowalski"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-                placeholder="jan@firma.pl"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Numer telefonu <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                type="tel"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-                placeholder="+48 123 456 789"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Social media (opcjonalnie)
-              </label>
-              <input
-                value={form.socials}
-                onChange={(e) => setForm({ ...form, socials: e.target.value })}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500`}
-                placeholder="Facebook / Instagram / LinkedIn / strona"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={`block text-sm font-bold ${textPrimary}`}>
-                Opisz swoje potrzeby <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                required
-                rows={6}
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                className={`w-full ${isDark ? 'bg-slate-800/50 border-slate-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} border-2 px-6 py-4 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none`}
-                placeholder="Potrzebuję strony internetowej dla mojej firmy..."
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-all disabled:opacity-50"
+          <div className={`space-y-4 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}>
+            <Link
+              href="/auth/signin"
+              className="block w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-all text-center"
             >
-              {isSubmitting ? 'Wysyłanie...' : 'Wyślij zapytanie'}
-            </button>
-          </form>
+              Zaloguj i zamów
+            </Link>
+            <p className={`text-sm ${textSecondary}`}>
+              Nie masz konta? 
+              <Link href="/auth/signup" className="text-blue-600 hover:underline ml-1">
+                Zarejestruj się
+              </Link>
+            </p>
+          </div>
 
         </div>
       </section>
