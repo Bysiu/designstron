@@ -4,12 +4,16 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import NavbarAuth from '@/components/NavbarAuth';
 
 export default function UserSettings() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [isDark, setIsDark] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,6 +27,20 @@ export default function UserSettings() {
       router.push('/auth/signin');
     }
   }, [status, router]);
+
+  useEffect(() => {
+    setMounted(true);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   useEffect(() => {
     if (session) {
@@ -87,6 +105,17 @@ export default function UserSettings() {
     }
   };
 
+  const bgClass = isDark 
+    ? 'bg-slate-950 text-white' 
+    : 'bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900';
+  
+  const cardBg = isDark 
+    ? 'bg-slate-900/50 border-slate-800' 
+    : 'bg-white/80 border-gray-200';
+
+  const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
+  const textPrimary = isDark ? 'text-white' : 'text-gray-900';
+
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -103,70 +132,97 @@ export default function UserSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/panel" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                DesignStron.pl
-              </Link>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <Link href="/panel" className="text-gray-600 hover:text-gray-900">
-                Panel
-              </Link>
-              <Link href="/panel/zamow" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700">
-                Zamów stronę
-              </Link>
-              <button
-                onClick={() => signOut()}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                Wyloguj się
-              </button>
-            </nav>
+    <div className={`min-h-screen ${bgClass} overflow-hidden transition-colors duration-500 relative`}>
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className={`absolute w-96 h-96 ${isDark ? 'bg-blue-500/20' : 'bg-blue-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          style={{
+            left: `${mousePosition.x / 20}px`,
+            top: `${mousePosition.y / 20}px`,
+          }}
+        />
+        <div 
+          className={`absolute w-96 h-96 ${isDark ? 'bg-purple-500/20' : 'bg-purple-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          style={{
+            right: `${mousePosition.x / 30}px`,
+            bottom: `${mousePosition.y / 30}px`,
+          }}
+        />
+        <div className={`absolute inset-0 ${isDark ? 'opacity-30' : 'opacity-20'} bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]`} />
+      </div>
+
+      {/* Simple Header */}
+      <header className={`fixed top-0 w-full z-50 ${cardBg} backdrop-blur-xl border-b`}>
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/panel" className="relative group">
+            <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              DesignStron.pl
+            </span>
+            <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
+          </Link>
+          
+          <div className="flex items-center gap-4">
+            <Link
+              href="/panel"
+              className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+            >
+              Panel
+            </Link>
+            <Link
+              href="/panel/zamow"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
+            >
+              Zamów stronę
+            </Link>
+            <button
+              onClick={() => signOut()}
+              className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+            >
+              Wyloguj się
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Ustawienia profilu</h1>
-          <p className="text-gray-600">Zarządzaj swoimi danymi osobowymi i hasłem</p>
-        </div>
+      <div className="relative pt-32 px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8 animate-fade-in">
+            <h1 className={`text-4xl font-black mb-2 ${textPrimary}`}>
+              Ustawienia <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">profilu</span>
+            </h1>
+            <p className={`${textSecondary} text-lg`}>Zarządzaj swoimi danymi osobowymi i hasłem</p>
+          </div>
 
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 animate-fade-in-up`} style={{ animationDelay: '0.1s' }}>
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* Informacje podstawowe */}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Informacje podstawowe</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Informacje podstawowe</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
                       Imię i nazwisko
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                       placeholder="Jan Kowalski"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
                       Email
                     </label>
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                       placeholder="twoj@email.com"
                     />
                   </div>
@@ -174,46 +230,46 @@ export default function UserSettings() {
               </div>
 
               {/* Zmiana hasła */}
-              <div className="border-t pt-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Zmiana hasła</h2>
-                <div className="space-y-4">
+              <div className="border-t border-gray-300/50 pt-8">
+                <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Zmiana hasła</h2>
+                <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
                       Obecne hasło
                     </label>
                     <input
                       type="password"
                       value={formData.currentPassword}
                       onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                       placeholder="••••••••"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
                       Nowe hasło
                     </label>
                     <input
                       type="password"
                       value={formData.newPassword}
                       onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                       placeholder="••••••••"
                       minLength={6}
                     />
-                    <p className="text-sm text-gray-500 mt-1">Minimum 6 znaków</p>
+                    <p className={`${textSecondary} text-sm mt-2`}>Minimum 6 znaków</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
                       Potwierdź nowe hasło
                     </label>
                     <input
                       type="password"
                       value={formData.confirmPassword}
                       onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                       placeholder="••••••••"
                       minLength={6}
                     />
@@ -223,10 +279,10 @@ export default function UserSettings() {
 
               {/* Komunikat */}
               {message && (
-                <div className={`p-4 rounded-lg ${
+                <div className={`p-4 rounded-xl border-2 ${
                   message.includes('błąd') || message.includes('nie')
-                    ? 'bg-red-50 border border-red-200 text-red-600'
-                    : 'bg-green-50 border border-green-200 text-green-600'
+                    ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                    : 'bg-green-500/10 border-green-500/30 text-green-400'
                 }`}>
                   {message}
                 </div>
@@ -236,40 +292,53 @@ export default function UserSettings() {
               <div className="flex justify-end space-x-4">
                 <Link
                   href="/panel"
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  className={`px-6 py-3 border-2 border-gray-300/50 rounded-xl ${isDark ? 'text-gray-300 hover:bg-gray-800/50' : 'text-gray-700 hover:bg-gray-100'} transition-all duration-300`}
                 >
                   Anuluj
                 </Link>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
                 >
                   {isLoading ? 'Zapisywanie...' : 'Zapisz zmiany'}
                 </button>
               </div>
             </form>
           </div>
-        </div>
 
-        {/* Sekcja niebezpieczeństwa */}
-        <div className="mt-8 bg-white rounded-lg shadow">
-          <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Niebezpieczeństwo</h2>
-            <div className="space-y-4">
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <h3 className="font-medium text-red-900 mb-2">Usuń konto</h3>
-                <p className="text-sm text-red-700 mb-4">
+          {/* Sekcja niebezpieczeństwa */}
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 mt-8 animate-fade-in-up`} style={{ animationDelay: '0.2s' }}>
+            <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Niebezpieczeństwo</h2>
+            <div className="space-y-6">
+              <div className={`p-6 rounded-xl border-2 border-red-500/30 bg-red-500/10`}>
+                <h3 className={`font-bold text-lg mb-2 text-red-400`}>Usuń konto</h3>
+                <p className={`${textSecondary} text-sm mb-4`}>
                   Usunięcie konta jest nieodwracalne. Wszystkie Twoje zamówienia i dane zostaną trwale usunięte.
                 </p>
-                <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                <button className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-700 transition-all duration-300 transform hover:scale-[1.02]">
                   Usuń konto
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in { animation: fade-in 0.8s ease-out; }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out; }
+      `}</style>
     </div>
   );
 }
