@@ -271,7 +271,7 @@ export default function SignUp() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={`relative appearance-none block w-full px-4 py-4 ${isDark ? 'bg-slate-800/80 border-slate-700 focus:border-purple-500' : 'bg-gray-50/80 border-gray-300 focus:border-purple-500'} border-2 rounded-xl shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 sm:text-sm transition-all duration-200`}
+                    className={`relative appearance-none block w-full px-4 py-4 ${isDark ? 'bg-slate-800/80 border-slate-700 focus:border-purple-500 text-white placeholder-gray-400' : 'bg-gray-50/80 border-gray-300 focus:border-purple-500 text-gray-900 placeholder-gray-500'} border-2 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 sm:text-sm transition-all duration-200`}
                     placeholder="Jan Kowalski"
                   />
                 </div>
@@ -291,7 +291,7 @@ export default function SignUp() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`relative appearance-none block w-full px-4 py-4 ${isDark ? 'bg-slate-800/80 border-slate-700 focus:border-purple-500' : 'bg-gray-50/80 border-gray-300 focus:border-purple-500'} border-2 rounded-xl shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 sm:text-sm transition-all duration-200`}
+                    className={`relative appearance-none block w-full px-4 py-4 ${isDark ? 'bg-slate-800/80 border-slate-700 focus:border-purple-500 text-white placeholder-gray-400' : 'bg-gray-50/80 border-gray-300 focus:border-purple-500 text-gray-900 placeholder-gray-500'} border-2 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 sm:text-sm transition-all duration-200`}
                     placeholder="twoj@email.pl"
                   />
                 </div>

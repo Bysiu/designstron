@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+// Import Prisma types
+import { OrderStatus } from "@prisma/client";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -21,7 +24,7 @@ export default async function handler(
     const { status } = req.query;
     
     const whereClause = status && status !== 'all' 
-      ? { status: status as string }
+      ? { status: status as OrderStatus }
       : {};
 
     const orders = await prisma.order.findMany({

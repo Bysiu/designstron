@@ -66,7 +66,7 @@ export default function SignIn() {
         // Sprawdź sesję i przekieruj
         const session = await getSession();
         if (session) {
-          router.push('/dashboard');
+          router.push('/panel');
         }
       }
     } catch (err) {
@@ -254,7 +254,7 @@ export default function SignIn() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className={`relative w-full px-4 py-3.5 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 placeholder:text-gray-500`}
+                        className={`relative w-full px-4 py-3.5 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                         placeholder="twoj@email.pl"
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">

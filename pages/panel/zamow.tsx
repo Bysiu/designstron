@@ -354,7 +354,7 @@ export default function ZamowStrone() {
                     type="text"
                     value={formularz.nazwaFirmy}
                     onChange={(e) => setFormularz(prev => ({ ...prev, nazwaFirmy: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     required
                   />
                 </div>
@@ -366,7 +366,7 @@ export default function ZamowStrone() {
                   <select
                     value={formularz.branża}
                     onChange={(e) => setFormularz(prev => ({ ...prev, branża: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     required
                   >
                     <option value="">Wybierz branżę</option>
@@ -391,7 +391,7 @@ export default function ZamowStrone() {
                     value={formularz.opisProjektu}
                     onChange={(e) => setFormularz(prev => ({ ...prev, opisProjektu: e.target.value }))}
                     rows={4}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     placeholder="Opisz jak ma wyglądać Twoja strona, jakie funkcje ma mieć, itp."
                     required
                   />
@@ -405,7 +405,7 @@ export default function ZamowStrone() {
                     type="text"
                     value={formularz.kolorystyka}
                     onChange={(e) => setFormularz(prev => ({ ...prev, kolorystyka: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     placeholder="np. niebieski, biały, szary"
                   />
                 </div>
@@ -418,7 +418,7 @@ export default function ZamowStrone() {
                     type="text"
                     value={formularz.terminRealizacji}
                     onChange={(e) => setFormularz(prev => ({ ...prev, terminRealizacji: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     placeholder="np. jak najszybciej, do 2 tygodni, konkretna data"
                   />
                 </div>
@@ -434,7 +434,7 @@ export default function ZamowStrone() {
                       ...prev, 
                       stronyPrzykładowe: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
                     }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     placeholder="Wpisz URL-e oddzielone przecinkami"
                   />
                 </div>
@@ -479,7 +479,7 @@ export default function ZamowStrone() {
                     value={formularz.uwagi}
                     onChange={(e) => setFormularz(prev => ({ ...prev, uwagi: e.target.value }))}
                     rows={3}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     placeholder="Wszystkie dodatkowe informacje, które uważasz za ważne"
                   />
                 </div>

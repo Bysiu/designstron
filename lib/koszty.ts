@@ -1,6 +1,36 @@
 import { PakietType as ImportedPakietType, UslugaDodatkowaType as ImportedUslugaDodatkowaType } from '@/types';
 
-export const KONFIGURACJA_KOSZTOW = {
+interface PakietConfig {
+  nazwa: string;
+  bazowaCena: number;
+  opis: string;
+  zawiera: Record<string, any>;
+}
+
+interface UslugaConfig {
+  nazwa: string;
+  cena: number;
+  opis: string;
+}
+
+interface KosztyConfig {
+  pakiety: Record<string, PakietConfig>;
+  uslugiDodatkowe: Record<string, UslugaConfig>;
+  obliczCene: (konfiguracja: {
+    pakiet: string;
+    uslugiDodatkowe?: string[];
+    dodatkowePodstrony?: number;
+  }) => {
+    sumaCalkowita: number;
+    szczegolyCeny: {
+      pakiet: { nazwa: string; cena: number };
+      dodatkowePodstrony: { ilosc: number; cenaJednostkowa: number; cenaCalkowita: number } | null;
+      uslugiDodatkowe: { nazwa: string; cena: number }[];
+    };
+  };
+}
+
+export const KONFIGURACJA_KOSZTOW: KosztyConfig = {
   // Podstawowe pakiety
   pakiety: {
     wizytowka: {
@@ -134,13 +164,13 @@ export const KONFIGURACJA_KOSZTOW = {
           cenaJednostkowa: KONFIGURACJA_KOSZTOW.uslugiDodatkowe.podstrona.cena,
           cenaCalkowita: konfiguracja.dodatkowePodstrony * KONFIGURACJA_KOSZTOW.uslugiDodatkowe.podstrona.cena
         } : null,
-        uslugiDodatkowe: konfiguracja.uslugiDodatkowe?.map(usluga => {
+        uslugiDodatkowe: (konfiguracja.uslugiDodatkowe?.map(usluga => {
           const uslugaConfig = KONFIGURACJA_KOSZTOW.uslugiDodatkowe[usluga as keyof typeof KONFIGURACJA_KOSZTOW.uslugiDodatkowe];
           return uslugaConfig ? {
             nazwa: uslugaConfig.nazwa,
             cena: uslugaConfig.cena
           } : null;
-        }).filter(Boolean)
+        }).filter((item): item is { nazwa: string; cena: number } => item !== null)) ?? []
       }
     };
   }

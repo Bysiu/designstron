@@ -18,6 +18,35 @@ body {
   overflow-x: hidden;
 }
 
+/* Fix form text colors - MORE SPECIFIC */
+body input, body textarea, body select {
+  color: #1f2937 !important;
+}
+
+body input::placeholder, body textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Dark mode fixes - MORE SPECIFIC */
+body.dark input, body.dark textarea, body.dark select {
+  color: #ffffff !important;
+}
+
+body.dark input::placeholder, body.dark textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+/* Override any browser defaults */
+input[type="text"], input[type="email"], input[type="password"], textarea {
+  color: #1f2937 !important;
+  background-color: #f9fafb !important;
+}
+
+.dark input[type="text"], .dark input[type="email"], .dark input[type="password"], .dark textarea {
+  color: #ffffff !important;
+  background-color: #1f2937 !important;
+}
+
 /* DODAJ TE ANIMACJE */
 @keyframes fade-in {
   from {
