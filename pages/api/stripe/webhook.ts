@@ -3,8 +3,8 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-02-24.acacia",
-});
+  apiVersion: "2025-12-15.clover",
+} as any);
 
 export default async function handler(
   req: NextApiRequest,
@@ -65,6 +65,26 @@ export default async function handler(
             },
           });
         }
+        break;
+
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log("Payment succeeded:", paymentIntent.id);
+        break;
+
+      case "payment_intent.payment_failed":
+        const failedPayment = event.data.object as Stripe.PaymentIntent;
+        console.log("Payment failed:", failedPayment.id);
+        break;
+
+      case "customer.subscription.created":
+        const subscription = event.data.object as Stripe.Subscription;
+        console.log("Subscription created:", subscription.id);
+        break;
+
+      case "customer.subscription.deleted":
+        const deletedSubscription = event.data.object as Stripe.Subscription;
+        console.log("Subscription deleted:", deletedSubscription.id);
         break;
 
       default:

@@ -6,11 +6,9 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import NavbarAuth from '@/components/NavbarAuth';
-import { loadStripe } from '@stripe/stripe-js';
+import { stripePromise } from '@/lib/stripe';
 import { KONFIGURACJA_KOSZTOW } from '@/lib/koszty';
 import { PakietType, UslugaDodatkowaType } from '@/types';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface FormularzZamowienia {
   pakiet: PakietType;

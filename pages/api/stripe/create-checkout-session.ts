@@ -3,8 +3,8 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-02-24.acacia",
-});
+  apiVersion: "2025-12-15.clover",
+} as any);
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,10 +21,19 @@ export default async function handler(
       return res.status(400).json({ message: "Brakujące dane" });
     }
 
+    // Znajdź użytkownika po email
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Użytkownik nie znaleziony" });
+    }
+
     // Tworzenie zamówienia w bazie danych
     const order = await prisma.order.create({
       data: {
-        userId: userEmail, // W rzeczywistości powinniśmy użyć ID użytkownika
+        userId: user.id, // Używamy ID użytkownika
         totalAmount: totalAmount,
         status: "PENDING",
         orderItems: {

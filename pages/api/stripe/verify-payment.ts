@@ -5,8 +5,8 @@ import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-02-24.acacia',
-});
+  apiVersion: '2025-12-15.clover',
+} as any);
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,10 +36,10 @@ export default async function handler(
       return res.status(404).json({ message: "Sesja nie znaleziona" });
     }
 
-    // Pobranie zamówienia na podstawie client_reference_id
+    // Pobranie zamówienia na podstawie metadata
     const order = await prisma.order.findUnique({
       where: { 
-        id: stripeSession.client_reference_id as string 
+        id: stripeSession.metadata?.orderId as string 
       },
       include: {
         user: {
