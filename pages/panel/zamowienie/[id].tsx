@@ -432,6 +432,7 @@ export default function ZamowienieSzczegoly() {
             </div>
           </div>
         </div>
+        </div>
       </main>
     </div>
   );
