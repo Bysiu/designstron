@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -27,6 +27,16 @@ interface FormularzZamowienia {
   uwagi: string;
 }
 
+interface DaneZamawiajacego {
+  typ: 'osoba' | 'firma';
+  imieNazwisko: string;
+  email: string;
+  telefon: string;
+  nazwaFirmy: string;
+  nip: string;
+  adres: string;
+}
+
 export default function ZamowStrone() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -35,9 +45,22 @@ export default function ZamowStrone() {
   const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [currentStep, setCurrentStep] = useState<'form' | 'data' | 'payment'>('form');
+  const [orderData, setOrderData] = useState<any>(null);
+  const [prefilledFromKalkulator, setPrefilledFromKalkulator] = useState(false);
+
+  const [daneZamawiajacego, setDaneZamawiajacego] = useState<DaneZamawiajacego>({
+    typ: 'osoba',
+    imieNazwisko: '',
+    email: '',
+    telefon: '',
+    nazwaFirmy: '',
+    nip: '',
+    adres: ''
+  });
 
   const [formularz, setFormularz] = useState<FormularzZamowienia>({
-    pakiet: 'wizytowka',
+    pakiet: 'basic',
     dodatkowePodstrony: 0,
     uslugiDodatkowe: [],
     nazwaFirmy: '',
@@ -55,9 +78,41 @@ export default function ZamowStrone() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/signin');
+      const callbackUrl = encodeURIComponent('/panel/zamow');
+      router.push(`/auth/signin?callbackUrl=${callbackUrl}`);
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!session?.user) return;
+    if (currentStep !== 'form') return;
+    if (prefilledFromKalkulator) return;
+
+    const raw = localStorage.getItem('kalkulatorOrder');
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed?.orderItems?.length && parsed?.totalAmount) {
+        setOrderData({
+          orderItems: parsed.orderItems,
+          totalAmount: Number(parsed.totalAmount),
+          formularz,
+          calculation: parsed.calculation,
+          source: 'kalkulator'
+        });
+        setPrefilledFromKalkulator(true);
+        setCurrentStep('data');
+      }
+    } catch {
+      // ignore
+    }
+  }, [mounted, session, currentStep, prefilledFromKalkulator]);
+
+  const handleBackToForm = () => {
+    setCurrentStep('form');
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -72,6 +127,15 @@ export default function ZamowStrone() {
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    setDaneZamawiajacego(prev => ({
+      ...prev,
+      imieNazwisko: session.user.name || prev.imieNazwisko,
+      email: session.user.email || prev.email
+    }));
+  }, [session]);
 
   useEffect(() => {
     if (formularz.pakiet) {
@@ -93,7 +157,7 @@ export default function ZamowStrone() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -102,7 +166,7 @@ export default function ZamowStrone() {
         throw new Error('Błąd kalkulacji ceny');
       }
 
-      // Przygotowanie order items dla Stripe
+      // Przygotowanie danych zamówienia
       const orderItems = [
         {
           name: kalkulacja.szczegolyCeny.pakiet.nazwa,
@@ -126,43 +190,87 @@ export default function ZamowStrone() {
       kalkulacja.szczegolyCeny.uslugiDodatkowe.forEach((usluga: any) => {
         orderItems.push({
           name: usluga.nazwa,
-          description: `Usługa dodatkowa: ${usluga.nazwa}`,
+          description: `Dodatkowa usługa: ${usluga.nazwa}`,
           quantity: 1,
           unitPrice: usluga.cena,
           totalPrice: usluga.cena
         });
       });
 
-      // Tworzenie sesji Stripe
+      // Zapisz dane zamówienia i przejdź do kroku danych
+      setOrderData({
+        orderItems,
+        totalAmount: Number(kalkulacja.calkowitaCena),
+        formularz
+      });
+      setCurrentStep('data');
+    } catch (error: any) {
+      console.error('Błąd podczas przygotowywania zamówienia:', error);
+      alert(error.message || 'Wystąpił błąd podczas przygotowywania zamówienia');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDataSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!daneZamawiajacego.imieNazwisko || !daneZamawiajacego.email) {
+      alert('Uzupełnij imię i nazwisko oraz email.');
+      return;
+    }
+    if (daneZamawiajacego.typ === 'firma' && (!daneZamawiajacego.nazwaFirmy || !daneZamawiajacego.nip)) {
+      alert('Uzupełnij nazwę firmy oraz NIP.');
+      return;
+    }
+
+    setOrderData((prev: any) => ({
+      ...prev,
+      daneZamawiajacego
+    }));
+    setCurrentStep('payment');
+  };
+
+  const handlePayment = async () => {
+    if (!orderData) return;
+
+    setIsSubmitting(true);
+    try {
+      const userEmail = session?.user?.email;
+      if (!userEmail) {
+        throw new Error('Brak emaila użytkownika');
+      }
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderItems,
-          userEmail: session?.user?.email,
-          totalAmount: kalkulacja.sumaCalkowita,
-          szczegolyZamowienia: formularz
+          orderItems: orderData.orderItems,
+          totalAmount: orderData.totalAmount,
+          userEmail,
+          customerPhone: orderData?.daneZamawiajacego?.telefon
         }),
       });
 
-      const { sessionId, orderId } = await response.json();
+      const sessionData = await response.json();
 
-      // Przekierowanie do Stripe Checkout
-      const stripe = await stripePromise;
-      if (stripe) {
-        const { error } = await stripe.redirectToCheckout({
-          sessionId,
-        });
-
-        if (error) {
-          throw error;
+      if (response.ok) {
+        const stripe = await stripePromise;
+        if (stripe) {
+          const { error } = await stripe.redirectToCheckout({
+            sessionId: sessionData.sessionId,
+          });
+          if (error) {
+            throw error.message;
+          }
         }
+      } else {
+        throw new Error(sessionData.message || 'Wystąpił błąd podczas tworzenia sesji płatności');
       }
-    } catch (error) {
-      console.error('Błąd składania zamówienia:', error);
-      alert('Wystąpił błąd podczas składania zamówienia. Spróbuj ponownie.');
+    } catch (error: any) {
+      console.error('Błąd podczas płatności:', error);
+      alert(error.message || 'Wystąpił błąd podczas płatności');
     } finally {
       setIsSubmitting(false);
     }
@@ -195,7 +303,7 @@ export default function ZamowStrone() {
   }
 
   return (
-    <div className={`min-h-screen ${bgClass} overflow-hidden transition-colors duration-500 relative`}>
+    <div data-theme={isDark ? 'dark' : 'light'} className={`min-h-screen ${bgClass} overflow-hidden transition-colors duration-500 relative`}>
       <Head>
         <title>Zamów stronę - Designstron</title>
         <meta name="description" content="Zamów profesjonalną stronę internetową" />
@@ -220,44 +328,7 @@ export default function ZamowStrone() {
         <div className={`absolute inset-0 ${isDark ? 'opacity-30' : 'opacity-20'} bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]`} />
       </div>
 
-      {/* Simple Header */}
-      <header className={`fixed top-0 w-full z-50 ${cardBg} backdrop-blur-xl border-b`}>
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/panel" className="relative group">
-            <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              DesignStron.pl
-            </span>
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
-          </Link>
-          
-          <div className="flex items-center gap-4">
-            <Link
-              href="/panel"
-              className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
-            >
-              Panel
-            </Link>
-            <Link
-              href="/panel/zamow"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
-            >
-              Zamów stronę
-            </Link>
-            <Link
-              href="/panel/ustawienia"
-              className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
-            >
-              Ustawienia
-            </Link>
-            <button
-              onClick={() => signOut()}
-              className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
-            >
-              Wyloguj się
-            </button>
-          </div>
-        </div>
-      </header>
+      <NavbarAuth isDark={isDark} setIsDark={setIsDark} currentPage="zamow" />
 
       {/* Main Content */}
       <div className="relative pt-32 px-4 sm:px-6 lg:px-8 pb-12">
@@ -269,7 +340,41 @@ export default function ZamowStrone() {
             <p className={`${textSecondary} text-lg`}>Wypełnij formularz i zamów swoją wymarzoną stronę</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Progress Steps */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center">
+              <div className={`flex items-center ${currentStep === 'form' ? 'text-blue-600' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                  currentStep === 'form' ? 'bg-blue-600 text-white' : 'bg-gray-300'
+                }`}>
+                  1
+                </div>
+                <span className="ml-2 font-medium">Formularz</span>
+              </div>
+              <div className="flex-1 h-1 mx-4 bg-gray-300"></div>
+              <div className={`flex items-center ${currentStep === 'data' ? 'text-blue-600' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                  currentStep === 'data' ? 'bg-blue-600 text-white' : 'bg-gray-300'
+                }`}>
+                  2
+                </div>
+                <span className="ml-2 font-medium">Dane</span>
+              </div>
+              <div className="flex-1 h-1 mx-4 bg-gray-300"></div>
+              <div className={`flex items-center ${currentStep === 'payment' ? 'text-blue-600' : 'text-gray-400'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                  currentStep === 'payment' ? 'bg-blue-600 text-white' : 'bg-gray-300'
+                }`}>
+                  3
+                </div>
+                <span className="ml-2 font-medium">Płatność</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 1: Form */}
+          {currentStep === 'form' && (
+            <form onSubmit={handleFormSubmit} className="space-y-8">
             {/* Wybór pakietu */}
             <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 animate-fade-in-up`} style={{ animationDelay: '0.1s' }}>
               <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Wybierz pakiet</h2>
@@ -518,11 +623,200 @@ export default function ZamowStrone() {
                   disabled={isSubmitting}
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
                 >
-                  {isSubmitting ? 'Przetwarzanie...' : 'Przejdź do płatności'}
+                  {isSubmitting ? 'Przetwarzanie...' : 'Dalej'}
                 </button>
               </div>
             )}
-          </form>
+            </form>
+          )}
+
+          {/* Step 2: Data */}
+          {currentStep === 'data' && (
+            <form onSubmit={handleDataSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8`}>
+                  <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Dane zamawiającego</h2>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                        Typ zamawiającego *
+                      </label>
+                      <select
+                        value={daneZamawiajacego.typ}
+                        onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, typ: e.target.value as DaneZamawiajacego['typ'] }))}
+                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        required
+                      >
+                        <option value="osoba">Osoba fizyczna</option>
+                        <option value="firma">Firma</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                        Imię i nazwisko *
+                      </label>
+                      <input
+                        type="text"
+                        value={daneZamawiajacego.imieNazwisko}
+                        onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, imieNazwisko: e.target.value }))}
+                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        value={daneZamawiajacego.email}
+                        onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, email: e.target.value }))}
+                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                        Telefon
+                      </label>
+                      <input
+                        type="tel"
+                        value={daneZamawiajacego.telefon}
+                        onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, telefon: e.target.value }))}
+                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        placeholder="+48 123 456 789"
+                      />
+                    </div>
+
+                    {daneZamawiajacego.typ === 'firma' && (
+                      <>
+                        <div>
+                          <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                            Nazwa firmy *
+                          </label>
+                          <input
+                            type="text"
+                            value={daneZamawiajacego.nazwaFirmy}
+                            onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, nazwaFirmy: e.target.value }))}
+                            className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                            NIP *
+                          </label>
+                          <input
+                            type="text"
+                            value={daneZamawiajacego.nip}
+                            onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, nip: e.target.value }))}
+                            className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                        Adres (do faktury)
+                      </label>
+                      <textarea
+                        value={daneZamawiajacego.adres}
+                        onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, adres: e.target.value }))}
+                        rows={3}
+                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        placeholder="Ulica, numer, kod, miasto"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8`}>
+                  <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Podsumowanie</h2>
+
+                  {orderData ? (
+                    <>
+                      <div className="space-y-2">
+                        {orderData.orderItems?.map((item: any, idx: number) => (
+                          <div key={idx} className="flex justify-between">
+                            <span className={textSecondary}>{item.name}</span>
+                            <span className={textPrimary}>
+                              {Number(item.totalPrice ?? item.unitPrice ?? 0).toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="border-t pt-4 mt-4">
+                        <div className="flex justify-between items-center">
+                          <span className={`text-xl font-bold ${textPrimary}`}>Suma:</span>
+                          <span className="text-2xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                            {Number(orderData.totalAmount || 0).toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <p className={textSecondary}>Brak danych koszyka.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={handleBackToForm}
+                  className={`flex-1 px-6 py-3 border-2 ${isDark ? 'border-slate-600 text-gray-300' : 'border-gray-300 text-gray-700'} rounded-xl font-medium hover:bg-gray-100 transition-all`}
+                >
+                  Wróć
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all"
+                >
+                  Przejdź do płatności
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Step 3: Payment */}
+          {currentStep === 'payment' && orderData && (
+            <div className="space-y-8">
+              <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8`}>
+                <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Płatność</h2>
+                <div className="text-center mb-8">
+                  <div className={`text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
+                    {orderData.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                  </div>
+                  <p className={`${textSecondary}`}>Kliknij przycisk poniżej, aby przejść do bezpiecznej płatności</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep('data')}
+                  className={`flex-1 px-6 py-3 border-2 ${isDark ? 'border-slate-600 text-gray-300' : 'border-gray-300 text-gray-700'} rounded-xl font-medium hover:bg-gray-100 transition-all`}
+                >
+                  Wróć
+                </button>
+                <button
+                  onClick={handlePayment}
+                  disabled={isSubmitting}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Przetwarzanie...' : 'Zapłać'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -539,6 +833,32 @@ export default function ZamowStrone() {
         
         .animate-fade-in { animation: fade-in 0.8s ease-out; }
         .animate-fade-in-up { animation: fade-in-up 0.8s ease-out; }
+
+        [data-theme='dark'] input:-webkit-autofill,
+        [data-theme='dark'] textarea:-webkit-autofill,
+        [data-theme='dark'] select:-webkit-autofill {
+          -webkit-text-fill-color: #ffffff;
+          box-shadow: 0 0 0px 1000px rgba(15, 23, 42, 0.8) inset;
+          transition: background-color 9999s ease-in-out 0s;
+        }
+
+        [data-theme='light'] input:-webkit-autofill,
+        [data-theme='light'] textarea:-webkit-autofill,
+        [data-theme='light'] select:-webkit-autofill {
+          -webkit-text-fill-color: #111827;
+          box-shadow: 0 0 0px 1000px rgba(249, 250, 251, 0.9) inset;
+          transition: background-color 9999s ease-in-out 0s;
+        }
+
+        [data-theme='dark'] select option {
+          background-color: #0f172a;
+          color: #ffffff;
+        }
+
+        [data-theme='light'] select option {
+          background-color: #ffffff;
+          color: #111827;
+        }
       `}</style>
     </div>
   );

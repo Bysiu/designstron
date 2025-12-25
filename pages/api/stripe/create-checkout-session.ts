@@ -15,7 +15,7 @@ export default async function handler(
   }
 
   try {
-    const { orderItems, userEmail, totalAmount } = req.body;
+    const { orderItems, userEmail, totalAmount, customerPhone } = req.body;
 
     if (!orderItems || !userEmail || !totalAmount) {
       return res.status(400).json({ message: "Brakujące dane" });
@@ -30,28 +30,31 @@ export default async function handler(
       return res.status(404).json({ message: "Użytkownik nie znaleziony" });
     }
 
-    // Tworzenie zamówienia w bazie danych
-    const order = await prisma.order.create({
-      data: {
-        userId: user.id, // Używamy ID użytkownika
-        totalAmount: totalAmount,
-        status: "PENDING",
-        orderItems: {
-          create: orderItems.map((item: any) => ({
-            name: item.name,
-            description: item.description,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            totalPrice: item.totalPrice,
-          })),
-        },
-        statusHistory: {
-          create: {
-            status: "PENDING",
-            comment: "Zamówienie utworzone, oczekuje na płatność",
-          },
+    const orderCreateData: any = {
+      userId: user.id, // Używamy ID użytkownika
+      totalAmount: totalAmount,
+      customerPhone: customerPhone || null,
+      status: "PENDING",
+      orderItems: {
+        create: orderItems.map((item: any) => ({
+          name: item.name,
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+        })),
+      },
+      statusHistory: {
+        create: {
+          status: "PENDING",
+          comment: "Zamówienie utworzone, oczekuje na płatność",
         },
       },
+    };
+
+    // Tworzenie zamówienia w bazie danych
+    const order = await prisma.order.create({
+      data: orderCreateData,
     });
 
     // Tworzenie sesji checkout Stripe

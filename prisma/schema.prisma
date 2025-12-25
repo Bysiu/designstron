@@ -20,6 +20,7 @@ model User {
   messages       Message[]
   sessions       Session[]
   accounts       Account[]
+  contactForms   ContactForm[]  // Dodane powiązanie
 
   @@map("users")
 }
@@ -69,6 +70,7 @@ model Order {
   status          OrderStatus @default(PENDING)
   totalAmount     Decimal     @db.Decimal(10, 2)
   stripePaymentId String?     @unique
+  customerPhone   String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -109,6 +111,23 @@ model Message {
   @@map("messages")
 }
 
+model ContactForm {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String   @db.Text
+  status    ContactStatus @default(NEW)
+  userId    String?  // Dodane powiązanie z użytkownikiem
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("contact_forms")
+}
+
 model OrderStatusHistory {
   id        String      @id @default(cuid())
   orderId   String
@@ -138,4 +157,11 @@ enum OrderStatus {
 enum MessageSender {
   USER
   ADMIN
+}
+
+enum ContactStatus {
+  NEW
+  READ
+  REPLIED
+  RESOLVED
 }

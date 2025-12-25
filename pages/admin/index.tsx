@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Head from 'next/head';
+import NavbarAuth from '@/components/NavbarAuth';
 
 interface Order {
   id: string;
@@ -32,6 +34,16 @@ export default function AdminPanel() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
+  const [isDark] = useState(true);
+  const noopSetIsDark = () => {};
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const confirmTwice = (label: string) => {
+    const first = window.confirm(`Czy na pewno chcesz wykonać akcję: ${label}?`);
+    if (!first) return false;
+    const second = window.confirm(`Potwierdź ponownie: ${label}`);
+    return second;
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -46,6 +58,18 @@ export default function AdminPanel() {
       fetchOrders();
     }
   }, [session, filter]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -137,94 +161,132 @@ export default function AdminPanel() {
     completed: orders.filter(o => o.status === 'COMPLETED').length,
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                DesignStron.pl
-              </Link>
-              <span className="ml-4 text-sm text-gray-500">Panel Administratora</span>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <Link href="/panel" className="text-gray-600 hover:text-gray-900">
-                Panel klienta
-              </Link>
-              <span className="text-gray-900 font-medium">Admin</span>
-            </nav>
-          </div>
-        </div>
-      </header>
+  const bgClass = isDark 
+    ? 'bg-slate-950 text-white' 
+    : 'bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900';
+  
+  const cardBg = isDark 
+    ? 'bg-slate-900/50 border-slate-800' 
+    : 'bg-white/80 border-gray-200';
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Panel Administratora</h1>
-          <p className="text-gray-600">Zarządzanie zamówieniami i klientami</p>
-        </div>
+  const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
+  const textPrimary = isDark ? 'text-white' : 'text-gray-900';
+
+  return (
+    <div data-theme={isDark ? 'dark' : 'light'} className={`min-h-screen ${bgClass} overflow-hidden transition-colors duration-500 relative`}>
+      <Head>
+        <title>Panel admina - Designstron</title>
+      </Head>
+
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className={`absolute w-96 h-96 ${isDark ? 'bg-blue-500/20' : 'bg-blue-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          style={{
+            left: `${mousePosition.x / 20}px`,
+            top: `${mousePosition.y / 20}px`,
+          }}
+        />
+        <div 
+          className={`absolute w-96 h-96 ${isDark ? 'bg-purple-500/20' : 'bg-purple-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          style={{
+            right: `${mousePosition.x / 30}px`,
+            bottom: `${mousePosition.y / 30}px`,
+          }}
+        />
+      </div>
+
+      <NavbarAuth isDark={isDark} setIsDark={noopSetIsDark} currentPage="admin" />
+
+      <main className="relative pt-32 px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-10">
+          <h1 className={`text-3xl sm:text-4xl font-black ${textPrimary}`}>
+            Panel Administratora
+          </h1>
+          <p className={`${textSecondary} mt-2`}>
+            Zarządzanie zamówieniami i klientami
+          </p>
+          </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
           <button
             onClick={() => setFilter('all')}
-            className={`bg-white rounded-lg shadow p-4 text-left transition-all ${
-              filter === 'all' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'
+            className={`group relative overflow-hidden rounded-2xl border bg-white/80 backdrop-blur-sm p-5 text-left transition-all ${
+              filter === 'all' ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
             }`}
           >
-            <p className="text-sm text-gray-600">Wszystkie</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.all}</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className={`text-sm ${textSecondary}`}>Wszystkie</p>
+              <p className={`text-3xl font-black ${textPrimary} mt-1`}>{stats.all}</p>
+            </div>
           </button>
 
           <button
             onClick={() => setFilter('PENDING')}
-            className={`bg-white rounded-lg shadow p-4 text-left transition-all ${
-              filter === 'PENDING' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'
+            className={`group relative overflow-hidden rounded-2xl border bg-white/80 backdrop-blur-sm p-5 text-left transition-all ${
+              filter === 'PENDING' ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
             }`}
           >
-            <p className="text-sm text-gray-600">Oczekujące</p>
-            <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className={`text-sm ${textSecondary}`}>Oczekujące</p>
+              <p className="text-3xl font-black text-yellow-700 mt-1">{stats.pending}</p>
+            </div>
           </button>
 
           <button
             onClick={() => setFilter('PAID')}
-            className={`bg-white rounded-lg shadow p-4 text-left transition-all ${
-              filter === 'PAID' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'
+            className={`group relative overflow-hidden rounded-2xl border bg-white/80 backdrop-blur-sm p-5 text-left transition-all ${
+              filter === 'PAID' ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
             }`}
           >
-            <p className="text-sm text-gray-600">Opłacone</p>
-            <p className="text-2xl font-bold text-green-600">{stats.paid}</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className={`text-sm ${textSecondary}`}>Opłacone</p>
+              <p className="text-3xl font-black text-green-700 mt-1">{stats.paid}</p>
+            </div>
           </button>
 
           <button
             onClick={() => setFilter('IN_PROGRESS')}
-            className={`bg-white rounded-lg shadow p-4 text-left transition-all ${
-              filter === 'IN_PROGRESS' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'
+            className={`group relative overflow-hidden rounded-2xl border bg-white/80 backdrop-blur-sm p-5 text-left transition-all ${
+              filter === 'IN_PROGRESS' ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
             }`}
           >
-            <p className="text-sm text-gray-600">W realizacji</p>
-            <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className={`text-sm ${textSecondary}`}>W realizacji</p>
+              <p className="text-3xl font-black text-blue-700 mt-1">{stats.inProgress}</p>
+            </div>
           </button>
 
           <button
             onClick={() => setFilter('COMPLETED')}
-            className={`bg-white rounded-lg shadow p-4 text-left transition-all ${
-              filter === 'COMPLETED' ? 'ring-2 ring-blue-500' : 'hover:shadow-md'
+            className={`group relative overflow-hidden rounded-2xl border bg-white/80 backdrop-blur-sm p-5 text-left transition-all ${
+              filter === 'COMPLETED' ? 'border-blue-500 ring-2 ring-blue-500/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
             }`}
           >
-            <p className="text-sm text-gray-600">Zakończone</p>
-            <p className="text-2xl font-bold text-purple-600">{stats.completed}</p>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <p className={`text-sm ${textSecondary}`}>Zakończone</p>
+              <p className="text-3xl font-black text-purple-700 mt-1">{stats.completed}</p>
+            </div>
           </button>
         </div>
 
         {/* Orders Table */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Zamówienia {filter !== 'all' && `(${getStatusText(filter)})`}
-            </h2>
+        <div className={`${cardBg} backdrop-blur-sm rounded-2xl border shadow-xl shadow-blue-500/5 overflow-hidden`}>
+          <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h2 className={`text-lg font-bold ${textPrimary}`}>
+                Zamówienia {filter !== 'all' && `(${getStatusText(filter)})`}
+              </h2>
+              <p className={`text-sm ${textSecondary} mt-1`}>
+                Szybki podgląd i zarządzanie statusami
+              </p>
+            </div>
           </div>
           
           {filteredOrders.length === 0 ? (
@@ -240,7 +302,7 @@ export default function AdminPanel() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-slate-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Zamówienie
@@ -265,21 +327,21 @@ export default function AdminPanel() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className={`${isDark ? 'bg-transparent divide-slate-800' : 'bg-white divide-gray-200'} divide-y`}>
                   {filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <tr key={order.id} className={`${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/70'} transition-colors`}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${textPrimary}`}>
                         #{order.id.slice(-8)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className={`text-sm font-medium ${textPrimary}`}>
                             {order.user.name || order.user.email}
                           </p>
-                          <p className="text-sm text-gray-500">{order.user.email}</p>
+                          <p className={`text-sm ${textSecondary}`}>{order.user.email}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${textSecondary}`}>
                         {new Date(order.createdAt).toLocaleDateString('pl-PL')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -287,29 +349,37 @@ export default function AdminPanel() {
                           {getStatusText(order.status)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${textPrimary}`}>
                         {order.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {order.messages.length}
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${textSecondary}`}>
+                        <span className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full bg-slate-100 text-slate-700 font-semibold">
+                          {order.messages.length}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <Link href={`/admin/zamowienie/${order.id}`} className="text-blue-600 hover:text-blue-900">
+                        <div className="flex items-center gap-3">
+                          <Link href={`/admin/zamowienie/${order.id}`} className="text-blue-600 hover:text-blue-900 font-semibold">
                             Szczegóły
                           </Link>
                           {order.status === 'PAID' && (
                             <button
-                              onClick={() => updateOrderStatus(order.id, 'IN_PROGRESS', 'Rozpoczęto realizację zamówienia')}
-                              className="text-green-600 hover:text-green-900"
+                              onClick={() => {
+                                if (!confirmTwice('Rozpocznij realizację')) return;
+                                updateOrderStatus(order.id, 'IN_PROGRESS', 'Rozpoczęto realizację zamówienia');
+                              }}
+                              className="text-green-700 hover:text-green-900 font-semibold"
                             >
                               Rozpocznij
                             </button>
                           )}
                           {order.status === 'IN_PROGRESS' && (
                             <button
-                              onClick={() => updateOrderStatus(order.id, 'COMPLETED', 'Zamówienie zakończone')}
-                              className="text-purple-600 hover:text-purple-900"
+                              onClick={() => {
+                                if (!confirmTwice('Zakończ zamówienie')) return;
+                                updateOrderStatus(order.id, 'COMPLETED', 'Zamówienie zakończone');
+                              }}
+                              className="text-purple-700 hover:text-purple-900 font-semibold"
                             >
                               Zakończ
                             </button>
@@ -322,6 +392,7 @@ export default function AdminPanel() {
               </table>
             </div>
           )}
+        </div>
         </div>
       </main>
     </div>

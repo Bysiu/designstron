@@ -20,6 +20,8 @@ export default function SignUp() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const router = useRouter();
 
+  const callbackUrl = typeof router.query.callbackUrl === 'string' ? router.query.callbackUrl : '';
+
   useEffect(() => {
     setMounted(true);
     
@@ -50,6 +52,8 @@ export default function SignUp() {
     setIsLoading(true);
     setError('');
     setSuccess(false);
+
+    const callbackUrl = typeof router.query.callbackUrl === 'string' ? router.query.callbackUrl : '';
 
     if (password !== confirmPassword) {
       setError('Hasła nie są identyczne');
@@ -89,7 +93,10 @@ export default function SignUp() {
       } else {
         setSuccess(true);
         setTimeout(() => {
-          router.push('/auth/signin');
+          const redirectTo = callbackUrl
+            ? `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : '/auth/signin';
+          router.push(redirectTo);
         }, 2000);
       }
     } catch (error) {
@@ -227,7 +234,7 @@ export default function SignUp() {
             </p>
             <p className={`${textSecondary} animate-fade-in-up`} style={{ animationDelay: '0.3s' }}>
               Masz już konto?{' '}
-              <Link href="/auth/signin" className="font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text hover:from-purple-300 hover:to-pink-300 transition-all">
+              <Link href={callbackUrl ? `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/auth/signin'} className="font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text hover:from-purple-300 hover:to-pink-300 transition-all">
                 Zaloguj się
               </Link>
             </p>

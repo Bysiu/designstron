@@ -26,7 +26,7 @@ export default async function handler(
           orderItems: true,
           statusHistory: {
             orderBy: {
-              createdAt: 'desc'
+              createdAt: 'asc'
             }
           },
           messages: {

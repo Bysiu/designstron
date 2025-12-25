@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Head from 'next/head';
+import NavbarAuth from '@/components/NavbarAuth';
 
 interface Message {
   id: string;
@@ -16,6 +18,7 @@ interface Order {
   status: string;
   totalAmount: number;
   createdAt: string;
+  customerPhone?: string | null;
   user: {
     name: string | null;
     email: string;
@@ -44,7 +47,17 @@ export default function AdminOrderDetails() {
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isDark] = useState(true);
+  const noopSetIsDark = () => {};
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const confirmTwice = (label: string) => {
+    const first = window.confirm(`Czy na pewno chcesz wykonać akcję: ${label}?`);
+    if (!first) return false;
+    const second = window.confirm(`Potwierdź ponownie: ${label}`);
+    return second;
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -63,6 +76,15 @@ export default function AdminOrderDetails() {
   useEffect(() => {
     scrollToBottom();
   }, [order?.messages]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -139,17 +161,17 @@ export default function AdminOrderDetails() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-500/15 text-yellow-200 border border-yellow-500/30';
       case 'PAID':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-500/15 text-green-200 border border-green-500/30';
       case 'IN_PROGRESS':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-500/15 text-blue-200 border border-blue-500/30';
       case 'COMPLETED':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-purple-500/15 text-purple-200 border border-purple-500/30';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-500/15 text-red-200 border border-red-500/30';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-500/15 text-slate-200 border border-slate-500/30';
     }
   };
 
@@ -172,10 +194,10 @@ export default function AdminOrderDetails() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Ładowanie...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div>
+          <p className="mt-4 text-gray-300">Ładowanie...</p>
         </div>
       </div>
     );
@@ -185,58 +207,69 @@ export default function AdminOrderDetails() {
     return null;
   }
 
+  const bgClass = 'bg-slate-950 text-white';
+  const cardBg = 'bg-slate-900/50 border-slate-800';
+  const textSecondary = 'text-gray-400';
+  const textPrimary = 'text-white';
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                DesignStron.pl
-              </Link>
-              <span className="ml-4 text-sm text-gray-500">Panel Administratora</span>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <Link href="/admin" className="text-gray-600 hover:text-gray-900">
-                Lista zamówień
-              </Link>
-              <Link href="/panel" className="text-gray-600 hover:text-gray-900">
-                Panel klienta
-              </Link>
-            </nav>
+    <div data-theme={isDark ? 'dark' : 'light'} className={`min-h-screen ${bgClass} overflow-hidden transition-colors duration-500 relative`}>
+      <Head>
+        <title>Szczegóły zamówienia - Admin</title>
+      </Head>
+
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className={`absolute w-96 h-96 ${isDark ? 'bg-blue-500/20' : 'bg-blue-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          style={{
+            left: `${mousePosition.x / 20}px`,
+            top: `${mousePosition.y / 20}px`,
+          }}
+        />
+        <div 
+          className={`absolute w-96 h-96 ${isDark ? 'bg-purple-500/20' : 'bg-purple-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          style={{
+            right: `${mousePosition.x / 30}px`,
+            bottom: `${mousePosition.y / 30}px`,
+          }}
+        />
+      </div>
+
+      <NavbarAuth isDark={isDark} setIsDark={noopSetIsDark} currentPage="admin" />
+
+      <main className="relative pt-32 px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-6">
+            <Link href="/admin" className="text-blue-400 hover:text-blue-300 flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Powrót do listy zamówień
+            </Link>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <Link href="/admin" className="text-blue-600 hover:text-blue-700 flex items-center">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Powrót do listy zamówień
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Szczegóły zamówienia */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className={`${cardBg} backdrop-blur-sm rounded-2xl border p-6`}>
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h1 className={`text-2xl font-bold ${textPrimary} mb-2`}>
                     Zamówienie #{order.id.slice(-8)}
                   </h1>
                   <div className="space-y-1">
-                    <p className="text-gray-600">
+                    <p className={textSecondary}>
                       Klient: {order.user.name || order.user.email}
                     </p>
-                    <p className="text-gray-600">
+                    <p className={textSecondary}>
                       Email: {order.user.email}
                     </p>
-                    <p className="text-gray-600">
+                    {order.customerPhone && (
+                      <p className={textSecondary}>
+                        Telefon: {order.customerPhone}
+                      </p>
+                    )}
+                    <p className={textSecondary}>
                       Data zamówienia: {new Date(order.createdAt).toLocaleDateString('pl-PL')}
                     </p>
                   </div>
@@ -250,7 +283,10 @@ export default function AdminOrderDetails() {
                   <div className="mt-3 space-y-2">
                     {order.status === 'PAID' && (
                       <button
-                        onClick={() => updateStatus('IN_PROGRESS', 'Rozpoczęto realizację zamówienia')}
+                        onClick={() => {
+                          if (!confirmTwice('Rozpocznij realizację')) return;
+                          updateStatus('IN_PROGRESS', 'Rozpoczęto realizację zamówienia');
+                        }}
                         disabled={isUpdatingStatus}
                         className="block w-full bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 disabled:opacity-50"
                       >
@@ -259,7 +295,10 @@ export default function AdminOrderDetails() {
                     )}
                     {order.status === 'IN_PROGRESS' && (
                       <button
-                        onClick={() => updateStatus('COMPLETED', 'Zamówienie zakończone')}
+                        onClick={() => {
+                          if (!confirmTwice('Zakończ zamówienie')) return;
+                          updateStatus('COMPLETED', 'Zamówienie zakończone');
+                        }}
                         disabled={isUpdatingStatus}
                         className="block w-full bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 disabled:opacity-50"
                       >
@@ -280,20 +319,20 @@ export default function AdminOrderDetails() {
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-gray-900">Szczegóły zamówienia</h2>
+                <h2 className={`text-lg font-semibold ${textPrimary}`}>Szczegóły zamówienia</h2>
                 {order.orderItems.map((item, index) => (
-                  <div key={index} className="border-b pb-4">
+                  <div key={index} className={`${isDark ? 'border-slate-800' : 'border-gray-200'} border-b pb-4`}>
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-medium text-gray-900">{item.name}</h3>
-                        <p className="text-sm text-gray-600">{item.description}</p>
-                        <p className="text-sm text-gray-500">Ilość: {item.quantity}</p>
+                        <h3 className={`font-medium ${textPrimary}`}>{item.name}</h3>
+                        <p className={`text-sm ${textSecondary}`}>{item.description}</p>
+                        <p className={`text-sm ${textSecondary}`}>Ilość: {item.quantity}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-gray-900">
+                        <p className={`font-semibold ${textPrimary}`}>
                           {item.totalPrice.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className={`text-sm ${textSecondary}`}>
                           {item.unitPrice.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })} / szt.
                         </p>
                       </div>
@@ -301,10 +340,10 @@ export default function AdminOrderDetails() {
                   </div>
                 ))}
 
-                <div className="border-t pt-4">
+                <div className={`${isDark ? 'border-slate-800' : 'border-gray-200'} border-t pt-4`}>
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Suma całkowita:</span>
-                    <span className="text-blue-600">
+                    <span className={textPrimary}>Suma całkowita:</span>
+                    <span className="text-blue-400">
                       {order.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
                     </span>
                   </div>
@@ -313,8 +352,8 @@ export default function AdminOrderDetails() {
             </div>
 
             {/* Historia statusu */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Historia statusu</h2>
+            <div className={`${cardBg} backdrop-blur-sm rounded-2xl border p-6`}>
+              <h2 className={`text-lg font-semibold ${textPrimary} mb-4`}>Historia statusu</h2>
               <div className="space-y-3">
                 {order.statusHistory.map((history, index) => (
                   <div key={index} className="flex items-start space-x-3">
@@ -327,15 +366,15 @@ export default function AdminOrderDetails() {
                     }`} />
                     <div className="flex-1">
                       <div className="flex justify-between items-start">
-                        <span className="font-medium text-gray-900">
+                        <span className={`font-medium ${textPrimary}`}>
                           {getStatusText(history.status)}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className={`text-sm ${textSecondary}`}>
                           {new Date(history.createdAt).toLocaleDateString('pl-PL')} {new Date(history.createdAt).toLocaleTimeString('pl-PL')}
                         </span>
                       </div>
                       {history.comment && (
-                        <p className="text-sm text-gray-600 mt-1">{history.comment}</p>
+                        <p className={`text-sm ${textSecondary} mt-1`}>{history.comment}</p>
                       )}
                     </div>
                   </div>
@@ -346,16 +385,16 @@ export default function AdminOrderDetails() {
 
           {/* Chat */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow h-[600px] flex flex-col">
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Wiadomości</h2>
-                <p className="text-sm text-gray-600">Komunikacja z klientem</p>
+            <div className={`${cardBg} backdrop-blur-sm rounded-2xl border h-[600px] flex flex-col overflow-hidden`}>
+              <div className={`${isDark ? 'border-slate-800' : 'border-gray-200'} p-4 border-b`}>
+                <h2 className={`text-lg font-semibold ${textPrimary}`}>Wiadomości</h2>
+                <p className={`text-sm ${textSecondary}`}>Komunikacja z klientem</p>
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {order.messages.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8">
-                    <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className={`text-center ${textSecondary} py-8`}>
+                    <svg className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-slate-700' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     <p>Brak wiadomości. Rozpocznij rozmowę z klientem!</p>
@@ -370,12 +409,12 @@ export default function AdminOrderDetails() {
                         className={`max-w-[80%] rounded-lg px-4 py-2 ${
                           message.sender === 'ADMIN'
                             ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-900'
+                            : isDark ? 'bg-slate-800 text-white' : 'bg-gray-100 text-gray-900'
                         }`}
                       >
                         <p className="text-sm">{message.content}</p>
                         <p className={`text-xs mt-1 ${
-                          message.sender === 'ADMIN' ? 'text-blue-100' : 'text-gray-500'
+                          message.sender === 'ADMIN' ? 'text-blue-100' : isDark ? 'text-slate-400' : 'text-gray-500'
                         }`}>
                           {new Date(message.createdAt).toLocaleTimeString('pl-PL', {
                             hour: '2-digit',
@@ -389,14 +428,16 @@ export default function AdminOrderDetails() {
                 <div ref={messagesEndRef} />
               </div>
 
-              <form onSubmit={sendMessage} className="p-4 border-t">
+              <form onSubmit={sendMessage} className={`${isDark ? 'border-slate-800' : 'border-gray-200'} p-4 border-t`}>
                 <div className="flex space-x-2">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Napisz wiadomość do klienta..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`flex-1 px-3 py-2 border-2 rounded-lg focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all ${
+                      isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-slate-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+                    }`}
                     disabled={isSending}
                   />
                   <button
@@ -416,6 +457,7 @@ export default function AdminOrderDetails() {
               </form>
             </div>
           </div>
+        </div>
         </div>
       </main>
     </div>

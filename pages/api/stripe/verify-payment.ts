@@ -60,6 +60,23 @@ export default async function handler(
       return res.status(403).json({ message: "Brak dostępu do zamówienia" });
     }
 
+    // Fallback: jeśli webhook nie dotarł, a Stripe pokazuje płatność jako opłaconą, zaktualizuj status w bazie
+    const isPaid = stripeSession.payment_status === 'paid' || (stripeSession as any).status === 'complete';
+    if (isPaid && order.status !== 'PAID') {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          status: 'PAID',
+          statusHistory: {
+            create: {
+              status: 'PAID',
+              comment: 'Płatność potwierdzona (verify-payment)'
+            }
+          }
+        }
+      });
+    }
+
     res.status(200).json({
       orderId: order.id,
       amount: order.totalAmount,

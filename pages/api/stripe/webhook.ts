@@ -1,10 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
+import { buffer } from 'micro';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",
 } as any);
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +27,8 @@ export default async function handler(
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    const rawBody = await buffer(req);
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err: any) {
     console.error(`Webhook signature verification failed:`, err.message);
     return res.status(400).send(`Webhook signature verification failed`);
@@ -45,6 +53,37 @@ export default async function handler(
               },
             },
           });
+        }
+        break;
+
+      case "charge.updated":
+      case "charge.succeeded":
+        const charge = event.data.object as Stripe.Charge;
+        console.log("Charge updated/succeeded:", charge.id);
+        
+        if (charge.payment_intent) {
+          // Znajdź zamówienie po payment_intent
+          const order = await prisma.order.findFirst({
+            where: {
+              stripePaymentId: charge.payment_intent as string
+            }
+          });
+          
+          if (order && charge.paid && charge.status === 'succeeded') {
+            await prisma.order.update({
+              where: { id: order.id },
+              data: { 
+                status: "PAID",
+                statusHistory: {
+                  create: {
+                    status: "PAID",
+                    comment: `Płatność zakończona pomyślnie (Charge ID: ${charge.id})`,
+                  },
+                },
+              },
+            });
+            console.log(`Order ${order.id} updated to PAID`);
+          }
         }
         break;
 

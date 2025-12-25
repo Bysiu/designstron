@@ -13,8 +13,23 @@ export type CopyToClipboardProps = {
   type: string;
 };
 
-export type PakietType = 'wizytowka' | 'firmowa' | 'landing';
-export type UslugaDodatkowaType = 'podstrona' | 'blog' | 'sklep' | 'rezerwacje' | 'wielojezyczny' | 'zaawansowaneSEO' | 'integracjaAPI' | 'animacje' | 'hosting' | 'utrzymanie';
+export type PakietType = 'basic' | 'professional' | 'premium';
+export type UslugaDodatkowaType =
+  | 'podstrona'
+  | 'blog'
+  | 'gallery'
+  | 'contact-form'
+  | 'seo'
+  | 'analytics'
+  | 'social'
+  | 'newsletter'
+  | 'chat'
+  | 'hosting'
+  | 'domain'
+  | 'ssl'
+  | 'maintenance'
+  | 'training'
+  | 'copywriting';
 
 declare module 'next-auth' {
   interface Session {
