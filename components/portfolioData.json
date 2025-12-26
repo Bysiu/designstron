@@ -7,6 +7,22 @@
       "image": "https://images.unsplash.com/photo-1606813902917-ef5e8d7f8f91?w=800&h=600&fit=crop",
       "href": "/portfolio/demo/gabinet-dentystyczny",
       "badge": "DEMO"
+    },
+    {
+      "id": "demo-szkola",
+      "title": "Szkoła Nauki Jazdy",
+      "description": "Rejestracja online, harmonogram jazd, panel kursanta, płatności raty, profil instruktorów.",
+      "image": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop",
+      "href": "/portfolio/demo/szkola-nauki-jazdy",
+      "badge": "DEMO"
+    },
+    {
+      "id": "demo-salon",
+      "title": "Salon Fryzjerski",
+      "description": "Rezerwacja wizyt, cennik usług, portfolio stylistów, chat online, program lojalnościowy.",
+      "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
+      "href": "/portfolio/demo/salon-fryzjerski",
+      "badge": "DEMO"
     }
 ],
   "projects": [
