@@ -55,7 +55,7 @@ export default function SzkolaNaukiJazdy() {
     { name: 'Piotr Wiśniewski', experience: '8 lat', rating: 4.7, courses: 'B, C' },
   ];
 
-  const handleAction = (message?: string) => {
+  const handleAction = () => {
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 3000);
   };
