@@ -5,7 +5,7 @@
       "title": "Gabinet Dentystyczny",
       "description": "System rezerwacji wizyt, panel pacjenta, płatności online, mapa Google, historia leczenia.",
       "image": "https://images.unsplash.com/photo-1606813902917-ef5e8d7f8f91?w=800&h=600&fit=crop",
-      "href": "/portfolio/demo/gabinet-dentystyczny",
+      "href": "/demo/gabinet-dentystyczny",
       "badge": "DEMO"
     },
     {
@@ -13,7 +13,7 @@
       "title": "Szkoła Nauki Jazdy",
       "description": "Rejestracja online, harmonogram jazd, panel kursanta, płatności raty, profil instruktorów.",
       "image": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop",
-      "href": "/portfolio/demo/szkola-nauki-jazdy",
+      "href": "/demo/szkola-nauki-jazdy",
       "badge": "DEMO"
     },
     {
@@ -21,7 +21,7 @@
       "title": "Salon Fryzjerski",
       "description": "Rezerwacja wizyt, cennik usług, portfolio stylistów, chat online, program lojalnościowy.",
       "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
-      "href": "/portfolio/demo/salon-fryzjerski",
+      "href": "/demo/salon-fryzjerski",
       "badge": "DEMO"
     }
 ],
