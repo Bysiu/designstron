@@ -19,30 +19,30 @@ body {
 }
 
 /* Fix form text colors - MORE SPECIFIC */
-body input, body textarea, body select {
+body input:not(.no-global-form), body textarea:not(.no-global-form), body select:not(.no-global-form) {
   color: #1f2937 !important;
 }
 
-body input::placeholder, body textarea::placeholder {
+body input:not(.no-global-form)::placeholder, body textarea:not(.no-global-form)::placeholder {
   color: #9ca3af !important;
 }
 
 /* Dark mode fixes - MORE SPECIFIC */
-body.dark input, body.dark textarea, body.dark select {
+body.dark input:not(.no-global-form), body.dark textarea:not(.no-global-form), body.dark select:not(.no-global-form) {
   color: #ffffff !important;
 }
 
-body.dark input::placeholder, body.dark textarea::placeholder {
+body.dark input:not(.no-global-form)::placeholder, body.dark textarea:not(.no-global-form)::placeholder {
   color: #6b7280 !important;
 }
 
 /* Override any browser defaults */
-input[type="text"], input[type="email"], input[type="password"], textarea {
+input[type="text"]:not(.no-global-form), input[type="email"]:not(.no-global-form), input[type="password"]:not(.no-global-form), textarea:not(.no-global-form) {
   color: #1f2937 !important;
   background-color: #f9fafb !important;
 }
 
-.dark input[type="text"], .dark input[type="email"], .dark input[type="password"], .dark textarea {
+.dark input[type="text"]:not(.no-global-form), .dark input[type="email"]:not(.no-global-form), .dark input[type="password"]:not(.no-global-form), .dark textarea:not(.no-global-form) {
   color: #ffffff !important;
   background-color: #1f2937 !important;
 }

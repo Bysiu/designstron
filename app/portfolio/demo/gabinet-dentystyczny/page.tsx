@@ -227,7 +227,8 @@ export default function GabinetDentystyczny() {
                     value={selectedDate}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setSelectedDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40 focus:border-transparent"
+                    style={{ colorScheme: 'dark' }}
+                    className="no-global-form w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40 focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -259,7 +260,7 @@ export default function GabinetDentystyczny() {
                   <input
                     type="text"
                     placeholder="Jan Kowalski"
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40"
+                    className="no-global-form w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40"
                   />
                 </div>
                 <div>
@@ -269,7 +270,7 @@ export default function GabinetDentystyczny() {
                   <input
                     type="tel"
                     placeholder="123 456 789"
-                    className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40"
+                    className="no-global-form w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40"
                   />
                 </div>
               </div>
@@ -277,7 +278,7 @@ export default function GabinetDentystyczny() {
                 <label className="block text-sm font-semibold text-slate-200 mb-2">
                   Wybierz usługę
                 </label>
-                <select className="w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40">
+                <select className="no-global-form w-full px-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:ring-2 focus:ring-cyan-400/40">
                   <option>Wybierz...</option>
                   {services.map((service, idx) => (
                     <option key={idx}>{service.name}</option>
