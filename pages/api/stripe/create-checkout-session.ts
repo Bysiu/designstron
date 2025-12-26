@@ -6,6 +6,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",
 } as any);
 
+function getBaseUrl(req: NextApiRequest) {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL;
+  const protoHeader = req.headers['x-forwarded-proto'];
+  const proto = (Array.isArray(protoHeader) ? protoHeader[0] : protoHeader)?.split(',')[0]?.trim();
+  const hostHeader = req.headers['x-forwarded-host'] || req.headers.host;
+  const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+
+  const base = envUrl || (host ? `${proto || 'http'}://${host}` : '');
+  return base.replace(/\/$/, '');
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -66,6 +77,7 @@ export default async function handler(
     });
 
     // Tworzenie sesji checkout Stripe
+    const baseUrl = getBaseUrl(req);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "blik", "p24"],
       line_items: orderItems.map((item: any) => ({
@@ -80,8 +92,8 @@ export default async function handler(
         quantity: item.quantity,
       })),
       mode: "payment",
-      success_url: `${process.env.NEXTAUTH_URL}/zamowienie/sukces?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXTAUTH_URL}/zamowienie/anulowane`,
+      success_url: `${baseUrl}/zamowienie/sukces?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/zamowienie/anulowane`,
       metadata: {
         orderId: order.id,
       },
