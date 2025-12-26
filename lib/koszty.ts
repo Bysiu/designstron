@@ -33,46 +33,38 @@ interface KosztyConfig {
 export const KONFIGURACJA_KOSZTOW: KosztyConfig = {
   // Podstawowe pakiety
   pakiety: {
-    wizytowka: {
-      nazwa: "Strona wizytówka",
-      bazowaCena: 800,
-      opis: "Idealne rozwiązanie dla małych firm i osób rozpoczynających działalność",
+    basic: {
+      nazwa: 'Strona Basic',
+      bazowaCena: 1500,
+      opis: 'Idealna dla małych firm i freelancerów',
       zawiera: {
-        podstrony: 1,
+        podstrony: 5,
         formularzKontaktowy: true,
-        integracjaMap: true,
-        podstawoweSEO: true,
-        panelAdmin: true,
-        wsparcieDni: 30
+        podstawoweSEO: true
       }
     },
-    firmowa: {
-      nazwa: "Strona firmowa",
-      bazowaCena: 1500,
-      opis: "Rozbudowana strona z podstronami, prezentacją usług i realizacji",
+    professional: {
+      nazwa: 'Strona Professional',
+      bazowaCena: 3000,
+      opis: 'Dla rozwijających się biznesów',
       zawiera: {
         podstrony: 10,
-        portfolio: true,
-        blog: true,
-        zaawansowaneSEO: true,
-        integracjeSocial: true,
         panelCMS: true,
-        wsparcieDni: 60,
-        szkolenie: true
+        blog: true,
+        galeria: true,
+        integracjeSocial: true
       }
     },
-    landing: {
-      nazwa: "Landing page",
-      bazowaCena: 1000,
-      opis: "Strona nastawiona na sprzedaż lub pozyskiwanie zapytań",
+    premium: {
+      nazwa: 'Strona Premium',
+      bazowaCena: 5000,
+      opis: 'Zaawansowane rozwiązania dla dużych firm',
       zawiera: {
-        optymalizacjaKonwersji: true,
-        abTesting: true,
-        integracjaAds: true,
-        analytics: true,
-        przyciskiCTA: true,
-        formularzeLeadowe: true,
-        wsparcieDni: 45
+        podstrony: 999,
+        zaawansowanyCMS: true,
+        sklepInternetowy: true,
+        systemRezerwacji: true,
+        aplikacjeWebowe: true
       }
     }
   },
@@ -80,54 +72,79 @@ export const KONFIGURACJA_KOSZTOW: KosztyConfig = {
   // Dodatkowe usługi i ich ceny
   uslugiDodatkowe: {
     podstrona: {
-      nazwa: "Dodatkowa podstrona",
-      cena: 150,
-      opis: "Każda kolejna podstrona powyżej limitu pakietu"
+      nazwa: 'Dodatkowa podstrona',
+      cena: 200,
+      opis: 'Dodatkowe podstrony powyżej limitu pakietu'
     },
     blog: {
-      nazwa: "Blog z systemem CMS",
+      nazwa: 'Blog',
       cena: 500,
-      opis: "Pełny system zarządzania blogiem"
+      opis: 'Dodatkowa funkcja'
     },
-    sklep: {
-      nazwa: "Sklep internetowy",
-      cena: 2000,
-      opis: "Podstawowy sklep z płatnościami online"
+    gallery: {
+      nazwa: 'Galeria zdjęć',
+      cena: 300,
+      opis: 'Dodatkowa funkcja'
     },
-    rezerwacje: {
-      nazwa: "System rezerwacji",
+    'contact-form': {
+      nazwa: 'Zaawansowany formularz kontaktowy',
+      cena: 200,
+      opis: 'Dodatkowa funkcja'
+    },
+    seo: {
+      nazwa: 'Zaawansowana optymalizacja SEO',
       cena: 800,
-      opis: "Kalendarz rezerwacji z powiadomieniami"
+      opis: 'Dodatkowa funkcja'
     },
-    wielojezyczny: {
-      nazwa: "Wersja wielojęzyczna",
-      cena: 1000,
-      opis: "Wsparcie dla wielu języków"
+    analytics: {
+      nazwa: 'Integracja z Google Analytics',
+      cena: 150,
+      opis: 'Dodatkowa funkcja'
     },
-    zaawansowaneSEO: {
-      nazwa: "Zaawansowane SEO",
-      cena: 800,
-      opis: "Pełna optymalizacja SEO z audytem"
+    social: {
+      nazwa: 'Integracja z mediami społecznościowymi',
+      cena: 250,
+      opis: 'Dodatkowa funkcja'
     },
-    integracjaAPI: {
-      nazwa: "Integracja API",
-      cena: 1200,
-      opis: "Integracja z zewnętrznymi systemami"
+    newsletter: {
+      nazwa: 'System newsletter',
+      cena: 400,
+      opis: 'Dodatkowa funkcja'
     },
-    animacje: {
-      nazwa: "Zaawansowane animacje",
-      cena: 600,
-      opis: "Custom animacje i interakcje"
+    chat: {
+      nazwa: 'Live chat na stronie',
+      cena: 350,
+      opis: 'Dodatkowa funkcja'
     },
     hosting: {
-      nazwa: "Hosting i domena (rok)",
-      cena: 400,
-      opis: "Konfiguracja hostingu i rejestracja domeny"
+      nazwa: 'Hosting na pierwszy rok',
+      cena: 300,
+      opis: 'Dodatkowa usługa'
     },
-    utrzymanie: {
-      nazwa: "Utrzymanie (miesiąc)",
-      cena: 200,
-      opis: "Regularne aktualizacje i wsparcie"
+    domain: {
+      nazwa: 'Rejestracja domeny',
+      cena: 100,
+      opis: 'Dodatkowa usługa'
+    },
+    ssl: {
+      nazwa: 'Certyfikat SSL',
+      cena: 150,
+      opis: 'Dodatkowa usługa'
+    },
+    maintenance: {
+      nazwa: 'Pakiet serwisowy (12 miesięcy)',
+      cena: 1200,
+      opis: 'Dodatkowa usługa'
+    },
+    training: {
+      nazwa: 'Szkolenie z obsługi panelu',
+      cena: 400,
+      opis: 'Dodatkowa usługa'
+    },
+    copywriting: {
+      nazwa: 'Tresowanie tekstów',
+      cena: 800,
+      opis: 'Dodatkowa usługa'
     }
   },
 

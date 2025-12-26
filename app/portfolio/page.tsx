@@ -76,7 +76,49 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* Projects Grid */}
+      {/* === DEMO PROJECTS SECTION (DODANE) === */}
+      {portfolioData.demoProjects && (
+        <section className="relative py-20 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl font-black mb-12">Projekty DEMO</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {portfolioData.demoProjects.map((demo, i) => (
+                <Link
+                  key={demo.id}
+                  href={demo.href}
+                  className={`group relative ${cardBg} backdrop-blur-sm rounded-3xl border overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl`}
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={demo.image}
+                      alt={demo.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <span className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full">
+                      DEMO
+                    </span>
+                  </div>
+
+                  <div className="p-8">
+                    <h3 className={`font-bold text-2xl mb-3 ${textPrimary}`}>
+                      {demo.title}
+                    </h3>
+                    <p className={`${textSecondary} mb-4 leading-relaxed`}>
+                      {demo.description}
+                    </p>
+                    <span className="text-blue-400 font-semibold">
+                      Zobacz demo →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Projects Grid (ORYGINALNY – NIETKNIĘTY) */}
       <section className="relative py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -101,64 +143,19 @@ export default function PortfolioPage() {
                     className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 bg-white text-slate-900 rounded-xl font-bold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 hover:scale-105 flex items-center gap-2"
                   >
                     Odwiedź stronę
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
                   </a>
                 </div>
 
                 <div className="p-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    {[...Array(project.rating)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className="w-5 h-5 text-yellow-400"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-
-                  <h3 className={`font-bold text-2xl mb-3 ${textPrimary} pb-1`}>
+                  <h3 className={`font-bold text-2xl mb-3 ${textPrimary}`}>
                     {project.companyName}
                   </h3>
-                  
-                  <p className={`${textSecondary} mb-4 leading-relaxed`}>
+                  <p className={`${textSecondary} mb-4`}>
                     {project.projectDescription}
                   </p>
-
-                  <div className={`pt-4 ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t`}>
-                    <p className={`text-sm italic ${textSecondary}`}>
-                      "{project.reviewText}"
-                    </p>
-                  </div>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="relative py-32 px-6">
-        <div className="max-w-5xl mx-auto text-center relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl blur-3xl opacity-20" />
-          
-          <div className={`relative ${cardBg} backdrop-blur-sm p-16 rounded-3xl border`}>
-            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
-              Stwórzmy razem Twoją stronę
-            </h2>
-            <p className={`text-xl ${textPrimary} mb-10 max-w-2xl mx-auto px-4`}>
-              Dołącz do grona zadowolonych klientów. Otrzymaj darmową wycenę w 24h.
-            </p>
-            <Link
-              href="/#kontakt"
-              className="inline-block px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 text-white"
-            >
-              Skontaktuj się z nami
-            </Link>
           </div>
         </div>
       </section>

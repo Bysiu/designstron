@@ -17,8 +17,16 @@ export default async function handler(
   try {
     const { orderItems, userEmail, totalAmount, customerPhone } = req.body;
 
+    console.log('Received data:', { orderItems, userEmail, totalAmount, customerPhone });
+
     if (!orderItems || !userEmail || !totalAmount) {
+      console.log('Missing data validation failed:', { orderItems: !!orderItems, userEmail: !!userEmail, totalAmount: !!totalAmount, totalAmountValue: totalAmount });
       return res.status(400).json({ message: "Brakujące dane" });
+    }
+
+    if (isNaN(totalAmount) || totalAmount <= 0) {
+      console.log('Invalid totalAmount:', totalAmount);
+      return res.status(400).json({ message: "Nieprawidłowa kwota" });
     }
 
     // Znajdź użytkownika po email

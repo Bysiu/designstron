@@ -200,7 +200,7 @@ export default function ZamowStrone() {
       // Zapisz dane zamówienia i przejdź do kroku danych
       setOrderData({
         orderItems,
-        totalAmount: Number(kalkulacja.calkowitaCena),
+        totalAmount: Number(kalkulacja.sumaCalkowita),
         formularz
       });
       setCurrentStep('data');
@@ -233,6 +233,12 @@ export default function ZamowStrone() {
 
   const handlePayment = async () => {
     if (!orderData) return;
+
+    // Validate totalAmount before sending to API
+    if (isNaN(orderData.totalAmount) || orderData.totalAmount <= 0) {
+      alert('Błąd: Nieprawidłowa kwota płatności. Spróbuj ponownie.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -757,7 +763,7 @@ export default function ZamowStrone() {
                         <div className="flex justify-between items-center">
                           <span className={`text-xl font-bold ${textPrimary}`}>Suma:</span>
                           <span className="text-2xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            {Number(orderData.totalAmount || 0).toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                            {isNaN(orderData.totalAmount || 0) ? 'Błąd obliczeń' : Number(orderData.totalAmount || 0).toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
                           </span>
                         </div>
                       </div>
@@ -793,7 +799,7 @@ export default function ZamowStrone() {
                 <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Płatność</h2>
                 <div className="text-center mb-8">
                   <div className={`text-3xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4`}>
-                    {orderData.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                    {isNaN(orderData.totalAmount) ? 'Błąd obliczeń' : orderData.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
                   </div>
                   <p className={`${textSecondary}`}>Kliknij przycisk poniżej, aby przejść do bezpiecznej płatności</p>
                 </div>

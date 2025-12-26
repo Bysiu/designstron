@@ -1,4 +1,14 @@
 {
+  "demoProjects": [
+    {
+      "id": "demo-dentyst",
+      "title": "Gabinet Dentystyczny",
+      "description": "System rezerwacji wizyt, panel pacjenta, płatności online, mapa Google, historia leczenia.",
+      "image": "https://images.unsplash.com/photo-1606813902917-ef5e8d7f8f91?w=800&h=600&fit=crop",
+      "href": "/demo/gabinet-dentystyczny",
+      "badge": "DEMO"
+    }
+],
   "projects": [
     {
       "id": 1,
