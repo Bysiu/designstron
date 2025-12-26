@@ -23,6 +23,22 @@
       "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=600&fit=crop",
       "href": "/demo/salon-fryzjerski",
       "badge": "DEMO"
+    },
+    {
+      "id": "demo-silownia",
+      "title": "Siłownia / Fitness",
+      "description": "Karnety i plany, grafik zajęć, panel członka, historia wejść, rezerwacje zajęć grupowych.",
+      "image": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop",
+      "href": "/demo/silownia-fitness",
+      "badge": "DEMO"
+    },
+    {
+      "id": "demo-stolarz",
+      "title": "Stolarz / Meble na wymiar",
+      "description": "Portfolio realizacji, zamówienia i statusy, formularz wyceny, upload inspiracji, chat z wykonawcą.",
+      "image": "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?w=800&h=600&fit=crop",
+      "href": "/demo/stolarz-meble",
+      "badge": "DEMO"
     }
 ],
   "projects": [
