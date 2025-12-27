@@ -59,6 +59,12 @@ export default function ZamowienieSzczegoly() {
   useEffect(() => {
     if (id && session) {
       fetchOrder();
+      // Set up polling for new messages
+      const interval = setInterval(() => {
+        fetchOrder();
+      }, 5000); // Check every 5 seconds
+
+      return () => clearInterval(interval);
     }
   }, [id, session]);
 
@@ -141,6 +147,7 @@ export default function ZamowienieSzczegoly() {
     e.preventDefault();
     if (!newMessage.trim() || isSending) return;
 
+    const messageContent = newMessage.trim();
     setIsSending(true);
     try {
       const response = await fetch(`/api/orders/${id}/messages`, {
@@ -149,7 +156,7 @@ export default function ZamowienieSzczegoly() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: newMessage.trim(),
+          content: messageContent,
           sender: 'USER'
         }),
       });

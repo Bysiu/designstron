@@ -12,7 +12,7 @@ import { PakietType, UslugaDodatkowaType } from '@/types';
 
 interface FormularzZamowienia {
   pakiet: PakietType;
-  dodatkowePodstrony: number;
+  liczbaPodstron: number;
   uslugiDodatkowe: UslugaDodatkowaType[];
   nazwaFirmy: string;
   branża: string;
@@ -61,7 +61,7 @@ export default function ZamowStrone() {
 
   const [formularz, setFormularz] = useState<FormularzZamowienia>({
     pakiet: 'basic',
-    dodatkowePodstrony: 0,
+    liczbaPodstron: 1,
     uslugiDodatkowe: [],
     nazwaFirmy: '',
     branża: '',
@@ -141,12 +141,21 @@ export default function ZamowStrone() {
     if (formularz.pakiet) {
       const wynik = KONFIGURACJA_KOSZTOW.obliczCene({
         pakiet: formularz.pakiet,
-        dodatkowePodstrony: formularz.dodatkowePodstrony,
+        dodatkowePodstrony: Math.max(0, formularz.liczbaPodstron - (formularz.pakiet === 'basic' ? 5 : formularz.pakiet === 'professional' ? 10 : 999)),
         uslugiDodatkowe: formularz.uslugiDodatkowe
       });
       setKalkulacja(wynik);
     }
-  }, [formularz.pakiet, formularz.dodatkowePodstrony, formularz.uslugiDodatkowe]);
+  }, [formularz.pakiet, formularz.liczbaPodstron, formularz.uslugiDodatkowe]);
+
+  const handlePackageChange = (pakiet: PakietType) => {
+    const defaultPages = pakiet === 'basic' ? 1 : pakiet === 'professional' ? 5 : 10;
+    setFormularz(prev => ({
+      ...prev,
+      pakiet,
+      liczbaPodstron: prev.liczbaPodstron < defaultPages ? defaultPages : prev.liczbaPodstron
+    }));
+  };
 
   const handleUslugaToggle = (usluga: UslugaDodatkowaType) => {
     setFormularz(prev => ({
@@ -410,23 +419,44 @@ export default function ZamowStrone() {
                 ))}
               </div>
             </div>
-
             {/* Dodatkowe opcje */}
             <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 animate-fade-in-up`} style={{ animationDelay: '0.2s' }}>
               <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Dodatkowe opcje</h2>
               
               <div className="mb-8">
-                <label className={`block text-sm font-bold mb-3 ${textPrimary}`}>
-                  Dodatkowe podstrony
+                <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                  Liczba podstron
                 </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={formularz.dodatkowePodstrony}
-                  onChange={(e) => setFormularz(prev => ({ ...prev, dodatkowePodstrony: parseInt(e.target.value) || 0 }))}
-                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-gray-50 border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
-                />
-                <p className={`${textSecondary} text-sm mt-2`}>Koszt: {KONFIGURACJA_KOSZTOW.uslugiDodatkowe.podstrona.cena} zł za sztukę</p>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="range"
+                      min={formularz.pakiet === 'basic' ? 1 : formularz.pakiet === 'professional' ? 5 : 10}
+                      max={formularz.pakiet === 'premium' ? 50 : 25}
+                      value={formularz.liczbaPodstron}
+                      onChange={(e) => {
+                        const newValue = parseInt(e.target.value) || 0;
+                        const minValue = formularz.pakiet === 'basic' ? 1 : formularz.pakiet === 'professional' ? 5 : 10;
+                        setFormularz(prev => ({ ...prev, liczbaPodstron: Math.max(minValue, newValue) }));
+                      }}
+                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                    <div className={`w-16 text-center font-bold ${textPrimary}`}>
+                      {formularz.liczbaPodstron}
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>{formularz.pakiet === 'basic' ? '1' : formularz.pakiet === 'professional' ? '5' : '10'}</span>
+                    <span>{formularz.pakiet === 'basic' ? '10' : formularz.pakiet === 'professional' ? '15' : '25'}</span>
+                    <span>{formularz.pakiet === 'basic' ? '15' : formularz.pakiet === 'professional' ? '20' : '35'}</span>
+                    <span>{formularz.pakiet === 'basic' ? '20' : formularz.pakiet === 'professional' ? '25' : '50'}</span>
+                  </div>
+                  {formularz.liczbaPodstron > (formularz.pakiet === 'basic' ? 5 : formularz.pakiet === 'professional' ? 10 : 999) && (
+                    <p className={`text-sm font-medium ${textPrimary}`}>
+                      Dodatkowe podstrony: +200 PLN/szt.
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -475,7 +505,7 @@ export default function ZamowStrone() {
                   <select
                     value={formularz.branża}
                     onChange={(e) => setFormularz(prev => ({ ...prev, branża: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                     required
                   >
                     <option value="">Wybierz branżę</option>
@@ -651,7 +681,7 @@ export default function ZamowStrone() {
                       <select
                         value={daneZamawiajacego.typ}
                         onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, typ: e.target.value as DaneZamawiajacego['typ'] }))}
-                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        className={`w-full px-4 py-3 bg-white text-black border-gray-300 border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                         required
                       >
                         <option value="osoba">Osoba fizyczna</option>
@@ -693,7 +723,7 @@ export default function ZamowStrone() {
                         type="tel"
                         value={daneZamawiajacego.telefon}
                         onChange={(e) => setDaneZamawiajacego(prev => ({ ...prev, telefon: e.target.value }))}
-                        className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                        className={`w-full px-4 py-3 bg-white text-black border-gray-300 border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
                         placeholder="+48 123 456 789"
                       />
                     </div>

@@ -33,6 +33,7 @@ export default function Panel() {
   const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -158,14 +159,15 @@ export default function Panel() {
       {/* Simple Header */}
       <header className={`fixed top-0 w-full z-50 ${cardBg} backdrop-blur-xl border-b`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/panel" className="relative group">
+          <Link href="/" className="relative group">
             <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               DesignStron.pl
             </span>
             <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
           </Link>
           
-          <div className="flex items-center gap-4">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
             <Link
               href="/panel"
               className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
@@ -191,7 +193,62 @@ export default function Panel() {
               Wyloguj się
             </button>
           </div>
+
+          {/* Mobile menu button */}
+          <button 
+            className="md:hidden p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        {isMobileMenuOpen && (
+          <div className={`md:hidden ${isDark ? 'bg-slate-900/95' : 'bg-white/95'} backdrop-blur-lg border-t ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+            <div className="px-6 py-4 space-y-3">
+              <Link
+                href="/panel"
+                className={`block py-3 px-4 rounded-lg ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Panel
+              </Link>
+              <Link
+                href="/panel/zamow"
+                className="block py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Zamów stronę
+              </Link>
+              <Link
+                href="/panel/ustawienia"
+                className={`block py-3 px-4 rounded-lg ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Ustawienia
+              </Link>
+              <button
+                onClick={() => {
+                  signOut();
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`block w-full py-3 px-4 rounded-lg text-left ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+              >
+                Wyloguj się
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
@@ -277,19 +334,19 @@ export default function Panel() {
               <table className="min-w-full divide-y divide-gray-300/50">
                 <thead className={`${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
                   <tr>
-                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
-                      Numer zamówienia
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                      Zamówienie
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
                       Data
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
                       Status
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
                       Kwota
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
                       Akcje
                     </th>
                   </tr>
@@ -297,21 +354,35 @@ export default function Panel() {
                 <tbody className={`${isDark ? 'bg-slate-900/50' : 'bg-white'} divide-y divide-gray-300/50`}>
                   {orders.map((order) => (
                     <tr key={order.id} className={`hover:${isDark ? 'bg-slate-800/30' : 'bg-gray-50'} transition-colors`}>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${textPrimary}`}>
-                        #{order.id.slice(-8)}
+                      <td className={`px-4 py-4 whitespace-nowrap`}>
+                        <div>
+                          <div className={`text-sm font-bold ${textPrimary}`}>
+                            #{order.id.slice(-8)}
+                          </div>
+                          <div className={`text-xs ${textSecondary}`}>
+                            {order.orderItems.length} {order.orderItems.length === 1 ? 'usługa' : 'usług'}
+                          </div>
+                        </div>
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${textSecondary}`}>
-                        {new Date(order.createdAt).toLocaleDateString('pl-PL')}
+                      <td className={`px-4 py-4 whitespace-nowrap text-sm ${textSecondary}`}>
+                        <div>
+                          <div>{new Date(order.createdAt).toLocaleDateString('pl-PL')}</div>
+                          <div className={`text-xs ${textSecondary}`}>
+                            {new Date(order.createdAt).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(order.status)}`}>
                           {getStatusText(order.status)}
                         </span>
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${textPrimary}`}>
-                        {order.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                      <td className={`px-4 py-4 whitespace-nowrap`}>
+                        <div className={`text-sm font-bold ${textPrimary}`}>
+                          {order.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <Link href={`/panel/zamowienie/${order.id}`} className="text-blue-400 hover:text-blue-300 font-medium">
                           Szczegóły
                         </Link>

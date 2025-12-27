@@ -62,6 +62,12 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                 >
                   Portfolio
                 </Link>
+                <Link
+                  href="/kalkulator"
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                >
+                  Kalkulator
+                </Link>
                 <a
                   href="#kontakt"
                   className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
@@ -88,6 +94,12 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
                 >
                   Portfolio
+                </Link>
+                <Link
+                  href="/kalkulator"
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                >
+                  Kalkulator
                 </Link>
                 <Link
                   href="/#kontakt"
@@ -182,6 +194,15 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                     Portfolio
                   </div>
                 </Link>
+                <Link
+                  href="/kalkulator"
+                  className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                    Kalkulator
+                  </div>
+                </Link>
                 <a
                   href="#kontakt"
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
@@ -219,6 +240,15 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                 >
                   <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
                     Portfolio
+                  </div>
+                </Link>
+                <Link
+                  href="/kalkulator"
+                  className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                  onClick={closeMobileMenu}
+                >
+                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                    Kalkulator
                   </div>
                 </Link>
                 <Link

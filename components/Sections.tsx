@@ -530,32 +530,118 @@ export default function DesignStronLanding() {
           </div>
         </div>
       </section>
+
+      {/* Contact Section */}
       <section id="kontakt" className="relative py-32 px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="mb-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-16 text-center">
             <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
-              Zamów swoją stronę
+              Kontakt
             </h2>
             <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4 mb-8`}>
-              Gotów na nową stronę internetową? Zaloguj się i zamów ją w kilku prostych krokach.
+              Masz pytania? Skontaktuj się z nami! Odpowiemy w ciągu 24 godzin.
             </p>
           </div>
 
-          <div className={`space-y-4 ${cardBg} backdrop-blur-sm p-10 rounded-3xl border shadow-2xl ${isDark ? 'shadow-purple-500/10' : 'shadow-blue-500/10'}`}>
-            <Link
-              href="/auth/signin"
-              className="block w-full py-5 rounded-2xl font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105 transition-all text-center"
-            >
-              Zaloguj i zamów
-            </Link>
-            <p className={`text-sm ${textSecondary}`}>
-              Nie masz konta? 
-              <Link href="/auth/signup" className="text-blue-600 hover:underline ml-1">
-                Zarejestruj się
-              </Link>
-            </p>
-          </div>
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 animate-fade-in-up`}>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                    Imię i nazwisko *
+                  </label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    required
+                  />
+                </div>
 
+                <div>
+                  <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                    Telefon
+                  </label>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    placeholder="+48 123 456 789"
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                    Temat *
+                  </label>
+                  <select
+                    value={form.subject}
+                    onChange={(e) => setForm(prev => ({ ...prev, subject: e.target.value }))}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    required
+                  >
+                    <option value="">Wybierz temat</option>
+                    <option value="zapytanie">Zapytanie o ofertę</option>
+                    <option value="zamowienie">Pytanie o zamówienie</option>
+                    <option value="techniczne">Wsparcie techniczne</option>
+                    <option value="wspolpraca">Współpraca</option>
+                    <option value="inne">Inne</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                  Wiadomość *
+                </label>
+                <textarea
+                  value={form.message}
+                  onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
+                  rows={6}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  placeholder="Opisz swoją sprawę..."
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+              >
+                {isSubmitting ? 'Wysyłanie...' : 'Wyślij wiadomość'}
+              </button>
+            </form>
+
+            <div className={`mt-8 p-6 rounded-xl ${isDark ? 'bg-slate-800/50' : 'bg-gray-50/50'}`}>
+              <h3 className={`text-lg font-bold mb-4 ${textPrimary}`}>Inne sposoby kontaktu</h3>
+              <div className="space-y-2">
+                <p className={`${textSecondary}`}>
+                  <strong>Email:</strong> kontakt@designstron.pl
+                </p>
+                <p className={`${textSecondary}`}>
+                  <strong>Telefon:</strong> +48 123 456 789
+                </p>
+                <p className={`${textSecondary}`}>
+                  <strong>Godziny pracy:</strong> Pon-Pt 9:00-17:00
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

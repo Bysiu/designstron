@@ -13,6 +13,18 @@ interface CalculationData {
   features: string[];
   additionalServices: string[];
   totalPrice: number;
+  projectDetails?: {
+    industry?: string;
+    description?: string;
+    colorScheme?: string;
+    referenceSites?: string[];
+    logo?: boolean;
+    copywriting?: boolean;
+    photography?: boolean;
+    deadline?: string;
+    budget?: string;
+    notes?: string;
+  };
 }
 
 export default function Kalkulator() {
@@ -22,10 +34,22 @@ export default function Kalkulator() {
   const [mounted, setMounted] = useState(false);
   const [calculation, setCalculation] = useState<CalculationData>({
     packageType: 'basic',
-    pages: 1,
+    pages: 5,
     features: [],
     additionalServices: [],
-    totalPrice: 0
+    totalPrice: 0,
+    projectDetails: {
+      industry: '',
+      description: '',
+      colorScheme: '',
+      referenceSites: [],
+      logo: false,
+      copywriting: false,
+      photography: false,
+      deadline: '',
+      budget: '',
+      notes: ''
+    }
   });
 
   useEffect(() => {
@@ -424,6 +448,202 @@ export default function Kalkulator() {
               Jeśli nie masz konta, zostaniesz przekierowany do rejestracji, a potem wrócisz do koszyka.
             </p>
           )}
+        </div>
+
+        {/* Project Details Section */}
+        <div className="max-w-4xl mx-auto mt-16">
+          <h2 className={`text-2xl font-bold mb-8 ${textPrimary}`}>Szczegóły projektu</h2>
+          <div className={`${cardBg} backdrop-blur-sm rounded-2xl border p-8`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                  Branża *
+                </label>
+                <input
+                  type="text"
+                  value={calculation.projectDetails?.industry || ''}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      industry: e.target.value
+                    }
+                  }))}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  placeholder="np. IT, e-commerce, usługi"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                  Kolorystyka *
+                </label>
+                <input
+                  type="text"
+                  value={calculation.projectDetails?.colorScheme || ''}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      colorScheme: e.target.value
+                    }
+                  }))}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  placeholder="np. niebiesko-biała, minimalistyczna"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                  Termin realizacji *
+                </label>
+                <input
+                  type="text"
+                  value={calculation.projectDetails?.deadline || ''}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      deadline: e.target.value
+                    }
+                  }))}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  placeholder="np. 2 tygodnie, 1 miesiąc"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                  Budżet *
+                </label>
+                <input
+                  type="text"
+                  value={calculation.projectDetails?.budget || ''}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      budget: e.target.value
+                    }
+                  }))}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  placeholder="np. 5000-8000 zł"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                Opis projektu *
+              </label>
+              <textarea
+                value={calculation.projectDetails?.description || ''}
+                onChange={(e) => setCalculation(prev => ({
+                  ...prev,
+                  projectDetails: {
+                    ...prev.projectDetails!,
+                    description: e.target.value
+                  }
+                }))}
+                rows={4}
+                className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                placeholder="Opisz swój projekt, cele i oczekiwania..."
+                required
+              />
+            </div>
+
+            <div className="mt-6">
+              <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                Przykładowe strony
+              </label>
+              <input
+                type="text"
+                value={calculation.projectDetails?.referenceSites?.join(', ') || ''}
+                onChange={(e) => setCalculation(prev => ({
+                  ...prev,
+                  projectDetails: {
+                    ...prev.projectDetails!,
+                    referenceSites: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                  }
+                }))}
+                className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                placeholder="Wpisz URL-e oddzielone przecinkami"
+              />
+            </div>
+
+            <div className="mt-6">
+              <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
+                Dodatkowe uwagi
+              </label>
+              <textarea
+                value={calculation.projectDetails?.notes || ''}
+                onChange={(e) => setCalculation(prev => ({
+                  ...prev,
+                  projectDetails: {
+                    ...prev.projectDetails!,
+                    notes: e.target.value
+                  }
+                }))}
+                rows={3}
+                className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                placeholder="Dodatkowe informacje lub wymagania..."
+              />
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <label className={`flex items-center space-x-3 cursor-pointer ${textPrimary}`}>
+                <input
+                  type="checkbox"
+                  checked={calculation.projectDetails?.logo || false}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      logo: e.target.checked
+                    }
+                  }))}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span>Potrzebuję logo</span>
+              </label>
+
+              <label className={`flex items-center space-x-3 cursor-pointer ${textPrimary}`}>
+                <input
+                  type="checkbox"
+                  checked={calculation.projectDetails?.copywriting || false}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      copywriting: e.target.checked
+                    }
+                  }))}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span>Potrzebuję tekstów</span>
+              </label>
+
+              <label className={`flex items-center space-x-3 cursor-pointer ${textPrimary}`}>
+                <input
+                  type="checkbox"
+                  checked={calculation.projectDetails?.photography || false}
+                  onChange={(e) => setCalculation(prev => ({
+                    ...prev,
+                    projectDetails: {
+                      ...prev.projectDetails!,
+                      photography: e.target.checked
+                    }
+                  }))}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span>Potrzebuję zdjęć</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </div>

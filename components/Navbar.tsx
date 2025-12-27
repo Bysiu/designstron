@@ -62,6 +62,13 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
                   Portfolio
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
                 </Link>
+                <Link
+                  href="/kalkulator"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Kalkulator
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </Link>
                 <a
                   href="#kontakt"
                   className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
@@ -84,6 +91,13 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
                   className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
                 >
                   Oferta
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                </Link>
+                <Link
+                  href="/kalkulator"
+                  className={`relative ${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors font-medium group`}
+                >
+                  Kalkulator
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
                 </Link>
                 <Link
@@ -155,6 +169,15 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
                   Portfolio
                 </div>
               </Link>
+              <Link
+                href="/kalkulator"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Kalkulator
+                </div>
+              </Link>
               <a
                 href="#kontakt"
                 className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
@@ -183,6 +206,15 @@ export default function Navbar({ isDark, setIsDark, currentPage = 'home' }: Navb
               >
                 <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
                   Oferta
+                </div>
+              </Link>
+              <Link
+                href="/kalkulator"
+                className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
+                onClick={closeMobileMenu}
+              >
+                <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  Kalkulator
                 </div>
               </Link>
               <Link

@@ -7,13 +7,14 @@ import Link from 'next/link';
 import NavbarAuth from '@/components/NavbarAuth';
 
 export default function UserSettings() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -57,6 +58,12 @@ export default function UserSettings() {
     setIsLoading(true);
     setMessage('');
 
+    if (formData.newPassword && !formData.currentPassword) {
+      setMessage('Obecne hasło jest wymagane do zmiany hasła');
+      setIsLoading(false);
+      return;
+    }
+
     // Walidacja haseł
     if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
       setMessage('Nowe hasła nie są identyczne');
@@ -88,6 +95,18 @@ export default function UserSettings() {
 
       if (response.ok) {
         setMessage('Ustawienia zostały zaktualizowane');
+
+        try {
+          await update({
+            user: {
+              name: formData.name,
+              email: formData.email,
+            },
+          } as any);
+        } catch {
+          // ignore session update errors
+        }
+
         // Czyść pola haseł
         setFormData(prev => ({
           ...prev,
@@ -155,14 +174,15 @@ export default function UserSettings() {
       {/* Simple Header */}
       <header className={`fixed top-0 w-full z-50 ${cardBg} backdrop-blur-xl border-b`}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/panel" className="relative group">
+          <Link href="/" className="relative group">
             <span className="font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               DesignStron.pl
             </span>
             <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur-xl opacity-0 group-hover:opacity-30 transition-opacity" />
           </Link>
           
-          <div className="flex items-center gap-4">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
             <Link
               href="/panel"
               className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
@@ -175,6 +195,12 @@ export default function UserSettings() {
             >
               Zamów stronę
             </Link>
+            <Link
+              href="/panel/ustawienia"
+              className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+            >
+              Ustawienia
+            </Link>
             <button
               onClick={() => signOut()}
               className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
@@ -182,7 +208,62 @@ export default function UserSettings() {
               Wyloguj się
             </button>
           </div>
+
+          {/* Mobile menu button */}
+          <button 
+            className="md:hidden p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            )}
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        {isMobileMenuOpen && (
+          <div className={`md:hidden ${isDark ? 'bg-slate-900/95' : 'bg-white/95'} backdrop-blur-lg border-t ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
+            <div className="px-6 py-4 space-y-3">
+              <Link
+                href="/panel"
+                className={`block py-3 px-4 rounded-lg ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Panel
+              </Link>
+              <Link
+                href="/panel/zamow"
+                className="block py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Zamów stronę
+              </Link>
+              <Link
+                href="/panel/ustawienia"
+                className={`block py-3 px-4 rounded-lg ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Ustawienia
+              </Link>
+              <button
+                onClick={() => {
+                  signOut();
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`block w-full py-3 px-4 rounded-lg text-left ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+              >
+                Wyloguj się
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}

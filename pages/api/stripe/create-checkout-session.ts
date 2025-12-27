@@ -9,11 +9,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 function getBaseUrl(req: NextApiRequest) {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL;
   const protoHeader = req.headers['x-forwarded-proto'];
-  const proto = (Array.isArray(protoHeader) ? protoHeader[0] : protoHeader)?.split(',')[0]?.trim();
+  const protoFromHeader = (Array.isArray(protoHeader) ? protoHeader[0] : protoHeader)?.split(',')[0]?.trim();
   const hostHeader = req.headers['x-forwarded-host'] || req.headers.host;
   const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
 
-  const base = envUrl || (host ? `${proto || 'http'}://${host}` : '');
+  const isProd = process.env.NODE_ENV === 'production';
+  const isLocalEnvUrl = !!envUrl && /(^|\/\/)(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(envUrl);
+  const preferredEnvUrl = envUrl && (!isProd || !isLocalEnvUrl) ? envUrl : undefined;
+
+  const proto = protoFromHeader || (isProd ? 'https' : 'http');
+  const base = preferredEnvUrl || (host ? `${proto}://${host}` : '');
   return base.replace(/\/$/, '');
 }
 
