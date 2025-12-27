@@ -12,6 +12,7 @@ export default function DesignStronLanding() {
     name: '',
     email: '',
     phone: '',
+    subject: '',
     socials: '',
     message: ''
   });
@@ -46,6 +47,7 @@ export default function DesignStronLanding() {
       name: '',
       email: '',
       phone: '',
+      subject: '',
       socials: '',
       message: ''
     });
