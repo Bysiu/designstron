@@ -74,7 +74,6 @@ export default async function handler(
       await prisma.order.update({
         where: { id: originalOrderId },
         data: {
-          hostingPlan: toPlan,
           // SSL jest dodatkową płatną usługą, nie automatycznie w planie Premium
           statusHistory: {
             create: {
