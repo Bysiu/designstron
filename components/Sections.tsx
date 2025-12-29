@@ -843,7 +843,7 @@ const offers = [
                       setForm(prev => ({ ...prev, name: e.target.value }));
                       if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.name ? 'border-red-500' : ''}`}
+                    className={`no-global-form w-full px-4 py-3 ${isDark ? '!bg-slate-900/55 !border-slate-600/60 !text-white placeholder-gray-400' : '!bg-gray-50 !border-gray-300 !text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.name ? '!border-red-500' : ''}`}
                     required
                   />
                   {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
@@ -860,7 +860,7 @@ const offers = [
                       setForm(prev => ({ ...prev, email: e.target.value }));
                       if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.email ? 'border-red-500' : ''}`}
+                    className={`no-global-form w-full px-4 py-3 ${isDark ? '!bg-slate-900/55 !border-slate-600/60 !text-white placeholder-gray-400' : '!bg-gray-50 !border-gray-300 !text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.email ? '!border-red-500' : ''}`}
                     required
                   />
                   {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -876,7 +876,7 @@ const offers = [
                       setForm(prev => ({ ...prev, phone: e.target.value }));
                       if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.phone ? 'border-red-500' : ''}`}
+                    className={`no-global-form w-full px-4 py-3 ${isDark ? '!bg-slate-900/55 !border-slate-600/60 !text-white placeholder-gray-400' : '!bg-gray-50 !border-gray-300 !text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.phone ? '!border-red-500' : ''}`}
                     placeholder="+48 123 456 789"
                   />
                   {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -892,7 +892,7 @@ const offers = [
                       setForm(prev => ({ ...prev, subject: e.target.value }));
                       if (errors.subject) setErrors(prev => ({ ...prev, subject: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.subject ? 'border-red-500' : ''}`}
+                    className={`no-global-form w-full px-4 py-3 ${isDark ? '!bg-slate-900/55 !border-slate-600/60 !text-white' : '!bg-gray-50 !border-gray-300 !text-gray-900'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.subject ? '!border-red-500' : ''}`}
                     required
                   >
                     <option value="">Wybierz temat</option>
@@ -917,7 +917,7 @@ const offers = [
                     if (errors.message) setErrors(prev => ({ ...prev, message: undefined }));
                   }}
                   rows={6}
-                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.message ? 'border-red-500' : ''}`}
+                  className={`no-global-form w-full px-4 py-3 ${isDark ? '!bg-slate-900/55 !border-slate-600/60 !text-white placeholder-gray-400' : '!bg-gray-50 !border-gray-300 !text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.message ? '!border-red-500' : ''}`}
                   placeholder="Opisz swoją sprawę..."
                   required
                 />
