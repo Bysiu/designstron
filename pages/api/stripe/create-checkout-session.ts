@@ -31,9 +31,140 @@ export default async function handler(
   }
 
   try {
-    const { orderItems, userEmail, totalAmount, customerPhone } = req.body;
+    const { orderItems, totalAmount, customerEmail, metadata, hostingData, formularz, userEmail } = req.body;
 
-    console.log('Received data:', { orderItems, userEmail, totalAmount, customerPhone });
+    console.log('Stripe API - Otrzymane dane:', { 
+      orderItems, 
+      totalAmount, 
+      customerEmail, 
+      metadata,
+      hostingData,
+      formularz
+    });
+
+    // Jeśli formularz zawiera dane hostingu, przekształć je na metadata
+    let finalMetadata = metadata;
+    if (formularz?.hostingExtend) {
+      finalMetadata = {
+        orderId: hostingData?.orderId || '', // To powinno być przekazane z frontendu
+        type: 'hosting_extend',
+        plan: formularz.hostingPlan,
+        period: formularz.hostingPeriod.toString(),
+        hostingExtend: 'true'
+      };
+    }
+
+    if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
+      return res.status(400).json({ message: "Brak elementów zamówienia" });
+    }
+
+    if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
+      return res.status(400).json({ message: "Nieprawidłowa kwota" });
+    }
+
+    // Sprawdź czy to płatność hostingu
+    if (finalMetadata?.type === 'hosting') {
+      // Dla hostingu - nie tworzymy nowego zamówienia, tylko płatność
+      const baseUrl = getBaseUrl(req);
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card", "blik", "p24"],
+        line_items: orderItems.map((item: any) => ({
+          price_data: {
+            currency: "pln",
+            product_data: {
+              name: item.name,
+              description: item.description,
+            },
+            unit_amount: Math.round(item.unitPrice * 100), // Zamień złotówki na grosze
+          },
+          quantity: item.quantity,
+        })),
+        mode: "payment",
+        success_url: `${baseUrl}/panel/hosting/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/panel/hosting/${metadata.orderId}?cancelled=true`,
+        customer_email: userEmail || customerEmail,
+        metadata: {
+          orderId: metadata.orderId,
+          type: 'hosting',
+          plan: metadata.plan,
+          domain: metadata.domain,
+          ssl: metadata.ssl,
+          period: metadata.period
+        },
+      });
+
+      return res.status(200).json({ sessionId: session.id });
+    }
+
+    // Sprawdź czy to przedłużenie hostingu
+    if (finalMetadata?.type === 'hosting_extend') {
+      const baseUrl = getBaseUrl(req);
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card", "blik", "p24"],
+        line_items: orderItems.map((item: any) => ({
+          price_data: {
+            currency: "pln",
+            product_data: {
+              name: item.name,
+              description: item.description,
+            },
+            unit_amount: Math.round(item.unitPrice * 100), // Zamień złotówki na grosze
+          },
+          quantity: item.quantity,
+        })),
+        mode: "payment",
+        success_url: `${baseUrl}/panel/hosting/${finalMetadata.orderId}/extend/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/panel/hosting/extend/cancel?cancelled=true`,
+        customer_email: userEmail || customerEmail,
+        metadata: {
+          orderId: finalMetadata.orderId,
+          originalOrderId: finalMetadata.orderId, // Dodaj oryginalne ID zamówienia
+          type: 'hosting_extend',
+          plan: finalMetadata.plan,
+          period: finalMetadata.period,
+          hostingExtend: 'true' // Dodaj flagę przedłużania
+        },
+      });
+
+      return res.status(200).json({ sessionId: session.id });
+    }
+
+    // Sprawdź czy to zmiana planu hostingu
+    if (finalMetadata?.type === 'hosting_change') {
+      const baseUrl = getBaseUrl(req);
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card", "blik", "p24"],
+        line_items: orderItems.map((item: any) => ({
+          price_data: {
+            currency: "pln",
+            product_data: {
+              name: item.name,
+              description: item.description,
+            },
+            unit_amount: Math.round(item.unitPrice * 100), // Zamień złotówki na grosze
+          },
+          quantity: item.quantity,
+        })),
+        mode: "payment",
+        success_url: `${baseUrl}/panel/hosting/change/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/panel/hosting/change/cancel?cancelled=true`,
+        customer_email: userEmail || customerEmail,
+        metadata: {
+          orderId: metadata.orderId,
+          originalOrderId: metadata.orderId, // Dodaj oryginalne ID zamówienia
+          type: 'hosting_change',
+          fromPlan: metadata.fromPlan,
+          toPlan: metadata.toPlan
+        },
+      });
+
+      return res.status(200).json({ sessionId: session.id });
+    }
+
+    // Standardowe tworzenie zamówienia (dla stron)
+    const { customerPhone } = req.body;
+
+    console.log('Received data:', { orderItems, userEmail, totalAmount, customerPhone, formularz });
 
     if (!orderItems || !userEmail || !totalAmount) {
       console.log('Missing data validation failed:', { orderItems: !!orderItems, userEmail: !!userEmail, totalAmount: !!totalAmount, totalAmountValue: totalAmount });
@@ -59,6 +190,23 @@ export default async function handler(
       totalAmount: totalAmount,
       customerPhone: customerPhone || null,
       status: "PENDING",
+      // Pola formularza zamówienia
+      nazwaFirmy: formularz?.nazwaFirmy || null,
+      branża: formularz?.branża || null,
+      opisProjektu: formularz?.opisProjektu || null,
+      kolorystyka: formularz?.kolorystyka || null,
+      stronyPrzykładowe: formularz?.stronyPrzykładowe || [],
+      logo: formularz?.logo || false,
+      teksty: formularz?.teksty || false,
+      zdjecia: formularz?.zdjecia || false,
+      terminRealizacji: formularz?.terminRealizacji || null,
+      budzet: formularz?.budzet || null,
+      uwagi: formularz?.uwagi || null,
+      // Pola hostingu
+      hostingPlan: hostingData?.plan || null,
+      domain: hostingData?.domena || null,
+      ssl: hostingData?.ssl || false,
+      hostingExpiresAt: null, // Będzie ustawione po aktywacji
       orderItems: {
         create: orderItems.map((item: any) => ({
           name: item.name,
@@ -71,7 +219,9 @@ export default async function handler(
       statusHistory: {
         create: {
           status: "PENDING",
-          comment: "Zamówienie utworzone, oczekuje na płatność",
+          comment: formularz?.hostingExtend ? "Przedłużenie hostingu - oczekuje na płatność" : 
+                  formularz?.hostingChange ? "Zmiana planu hostingu - oczekuje na płatność" :
+                  "Zamówienie utworzone, oczekuje na płatność",
         },
       },
     };
@@ -83,19 +233,53 @@ export default async function handler(
 
     // Tworzenie sesji checkout Stripe
     const baseUrl = getBaseUrl(req);
+    // Przygotuj line_items dla Stripe
+    let lineItems = orderItems.map((item: any) => ({
+      price_data: {
+        currency: 'pln',
+        product_data: {
+          name: item.name,
+          description: item.description || '',
+        },
+        unit_amount: Math.round(item.unitPrice * 100), // Stripe wymaga kwoty w groszach
+      },
+      quantity: item.quantity || 1,
+    }));
+
+    // Dodaj hosting do line_items jeśli wybrano
+    if (hostingData && hostingData.plan && !hostingData.zdecydujePozniej) {
+      const hostingPrice = hostingData.plan === 'basic' ? 200 : 400;
+      lineItems.push({
+        price_data: {
+          currency: 'pln',
+          product_data: {
+            name: `Hosting ${hostingData.plan === 'basic' ? 'Basic' : 'Premium'}`,
+            description: `Hosting na ${hostingData.period} miesięcy`,
+          },
+          unit_amount: Math.round(hostingPrice * 100),
+        },
+        quantity: hostingData.period,
+      });
+
+      // Dodaj SSL jeśli wybrano
+      if (hostingData.ssl) {
+        lineItems.push({
+          price_data: {
+            currency: 'pln',
+            product_data: {
+              name: 'Certyfikat SSL',
+              description: 'Certyfikat SSL na 1 rok',
+            },
+            unit_amount: Math.round(100 * 100),
+          },
+          quantity: 1,
+        });
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "blik", "p24"],
-      line_items: orderItems.map((item: any) => ({
-        price_data: {
-          currency: "pln",
-          product_data: {
-            name: item.name,
-            description: item.description,
-          },
-          unit_amount: Math.round(item.unitPrice * 100), // Stripe używa groszy
-        },
-        quantity: item.quantity,
-      })),
+      line_items: lineItems,
       mode: "payment",
       success_url: `${baseUrl}/zamowienie/sukces?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/zamowienie/anulowane`,

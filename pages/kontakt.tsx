@@ -6,6 +6,8 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import NavbarAuth from '@/components/NavbarAuth';
+import Footer from '@/components/Footer';
+import { validateContactForm, FormErrors } from '@/lib/validation';
 
 export default function Kontakt() {
   const { data: session, status } = useSession();
@@ -22,6 +24,7 @@ export default function Kontakt() {
     subject: '',
     message: ''
   });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     setMounted(true);
@@ -64,8 +67,16 @@ export default function Kontakt() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Walidacja formularza
+    const validationErrors = validateContactForm(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    
     setIsSubmitting(true);
-
+    
     try {
       const response = await fetch('/api/contact/form', {
         method: 'POST',
@@ -89,6 +100,7 @@ export default function Kontakt() {
           subject: '',
           message: ''
         });
+        setErrors({});
       } else {
         throw new Error(data.message || 'Wystąpił błąd');
       }
@@ -170,10 +182,14 @@ export default function Kontakt() {
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, name: e.target.value }));
+                      if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.name ? 'border-red-500' : ''}`}
                     required
                   />
+                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
@@ -183,10 +199,14 @@ export default function Kontakt() {
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, email: e.target.value }));
+                      if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.email ? 'border-red-500' : ''}`}
                     required
                   />
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -196,10 +216,14 @@ export default function Kontakt() {
                   <input
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, phone: e.target.value }));
+                      if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.phone ? 'border-red-500' : ''}`}
                     placeholder="+48 123 456 789"
                   />
+                  {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                 </div>
 
                 <div>
@@ -208,8 +232,11 @@ export default function Kontakt() {
                   </label>
                   <select
                     value={formData.subject}
-                    onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, subject: e.target.value }));
+                      if (errors.subject) setErrors(prev => ({ ...prev, subject: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.subject ? 'border-red-500' : ''}`}
                     required
                   >
                     <option value="">Wybierz temat</option>
@@ -219,6 +246,7 @@ export default function Kontakt() {
                     <option value="wspolpraca">Współpraca</option>
                     <option value="inne">Inne</option>
                   </select>
+                  {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
                 </div>
               </div>
 
@@ -228,12 +256,16 @@ export default function Kontakt() {
                 </label>
                 <textarea
                   value={formData.message}
-                  onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, message: e.target.value }));
+                    if (errors.message) setErrors(prev => ({ ...prev, message: undefined }));
+                  }}
                   rows={6}
-                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.message ? 'border-red-500' : ''}`}
                   placeholder="Opisz swoją sprawę..."
                   required
                 />
+                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
               </div>
 
               <button

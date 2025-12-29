@@ -71,6 +71,23 @@ model Order {
   totalAmount     Decimal     @db.Decimal(10, 2)
   stripePaymentId String?     @unique
   customerPhone   String?
+  // Pola formularza zamówienia
+  nazwaFirmy      String?
+  branża          String?
+  opisProjektu    String?     @db.Text
+  kolorystyka     String?
+  stronyPrzykładowe String[]   @default([])
+  logo            Boolean     @default(false)
+  teksty          Boolean     @default(false)
+  zdjecia         Boolean     @default(false)
+  terminRealizacji String?
+  budzet          String?
+  uwagi           String?     @db.Text
+  // Pola hostingu
+  hostingPlan     String?     // 'basic' | 'premium' | null
+  domain          String?
+  ssl             Boolean     @default(false)
+  hostingExpiresAt DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 

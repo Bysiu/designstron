@@ -5,6 +5,8 @@ import ReviewsCarousel from '@/components/ReviewsCarousel';
 import NavbarAuth from '@/components/NavbarAuth';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import { validateContactForm, FormErrors } from '@/lib/validation';
+import HowItWorks from '@/components/HowItWorks';
 
 export default function DesignStronLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -16,6 +18,7 @@ export default function DesignStronLanding() {
     socials: '',
     message: ''
   });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
@@ -38,20 +41,35 @@ export default function DesignStronLanding() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Walidacja formularza
+    const validationErrors = validateContactForm(form);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    alert('Dziękujemy za wiadomość! Skontaktujemy się z Tobą w ciągu 24 godzin.');
-    setForm({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      socials: '',
-      message: ''
-    });
-    setIsSubmitting(false);
+    try {
+      // Symulacja wysyłania
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      alert('Dziękujemy za wiadomość! Skontaktujemy się z Tobą w ciągu 24 godzin.');
+      setForm({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        socials: '',
+        message: ''
+      });
+      setErrors({});
+    } catch (error) {
+      alert('Wystąpił błąd podczas wysyłania formularza. Spróbuj ponownie.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const benefits = [
@@ -84,7 +102,7 @@ export default function DesignStronLanding() {
   const offers = [
     {
       title: 'Strona wizytówka',
-      price: '800',
+      price: '1500',
       description: 'Idealne rozwiązanie dla małych firm i osób rozpoczynających działalność. Wszystko czego potrzebujesz do prezentacji w sieci.',
       features: [
         'Responsywny design dostosowany do marki',
@@ -98,7 +116,7 @@ export default function DesignStronLanding() {
       color: 'blue'
     },
     {
-      title: 'Strona firmowa',
+      title: 'Strona Professional',
       price: '1500',
       description: 'Rozbudowana strona z podstronami, prezentacją usług i realizacji. Kompleksowe rozwiązanie dla rozwijających się firm.',
       features: [
@@ -115,8 +133,8 @@ export default function DesignStronLanding() {
       color: 'purple'
     },
     {
-      title: 'Landing page',
-      price: '1000',
+      title: 'Strona Premium',
+      price: '5000',
       description: 'Strona nastawiona na sprzedaż lub pozyskiwanie zapytań. Maksymalna konwersja to nasz priorytet.',
       features: [
         'Optymalizacja konwersji (CRO)',
@@ -161,7 +179,7 @@ export default function DesignStronLanding() {
   const faqs = [
     { 
       q: 'Ile dokładnie kosztuje strona internetowa?', 
-      a: 'Cena zależy od rodzaju i zakresu projektu. Prosta strona wizytówka to koszt od 800 zł, strony firmowe zaczynają się od 1500 zł, a landing page od 1000 zł. Każdy projekt wyceniamy indywidualnie po dokładnym poznaniu wymagań. Podane ceny to orientacyjne punkty startowe – ostateczna kwota zależy od dodatkowych funkcjonalności, integracji czy liczby podstron.' 
+      a: 'Cena zależy od rodzaju i zakresu projektu. Prosta strona wizytówka to koszt od 1500 zł, strony firmowe zaczynają się od 1500 zł, a Strona Premium od 5000 zł. Każdy projekt wyceniamy indywidualnie po dokładnym poznaniu wymagań. Podane ceny to orientacyjne punkty startowe – ostateczna kwota zależy od dodatkowych funkcjonalności, integracji czy liczby podstron.' 
     },
     { 
       q: 'Ile czasu trwa wykonanie strony internetowej?', 
@@ -194,7 +212,7 @@ export default function DesignStronLanding() {
     : 'bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900';
   
   const cardBg = isDark 
-    ? 'bg-slate-900/50 border-slate-800' 
+    ? 'bg-slate-900/50 border-slate-1500' 
     : 'bg-white/80 border-gray-200';
 
   const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
@@ -205,14 +223,14 @@ export default function DesignStronLanding() {
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div 
-          className={`absolute w-96 h-96 ${isDark ? 'bg-blue-500/20' : 'bg-blue-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          className={`absolute w-96 h-96 ${isDark ? 'bg-blue-500/20' : 'bg-blue-400/30'} rounded-full blur-3xl transition-all duration-5000`}
           style={{
             left: `${mousePosition.x / 20}px`,
             top: `${mousePosition.y / 20}px`,
           }}
         />
         <div 
-          className={`absolute w-96 h-96 ${isDark ? 'bg-purple-500/20' : 'bg-purple-400/30'} rounded-full blur-3xl transition-all duration-1000`}
+          className={`absolute w-96 h-96 ${isDark ? 'bg-purple-500/20' : 'bg-purple-400/30'} rounded-full blur-3xl transition-all duration-5000`}
           style={{
             right: `${mousePosition.x / 30}px`,
             bottom: `${mousePosition.y / 30}px`,
@@ -357,7 +375,7 @@ export default function DesignStronLanding() {
                   offer.featured
                     ? 'bg-gradient-to-br from-blue-600 to-purple-600 shadow-2xl shadow-purple-500/30 scale-105'
                     : isDark
-                    ? 'bg-slate-900/50 backdrop-blur-sm border border-slate-800 hover:border-slate-700'
+                    ? 'bg-slate-900/50 backdrop-blur-sm border border-slate-1500 hover:border-slate-700'
                     : 'bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-gray-300 hover:shadow-xl'
                 }`}
               >
@@ -446,6 +464,258 @@ export default function DesignStronLanding() {
         </div>
       </section>
 
+      {/* About Us */}
+      <section id="o-nas" className="relative py-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
+              O nas
+            </h2>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
+              DesignStron.pl - Twoje profesjonalne rozwiązanie w świecie stron internetowych
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center h-full">
+            <div className="space-y-8 h-full">
+              <div className="space-y-6 h-full flex flex-col justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className={`font-bold text-2xl mb-2 ${textPrimary}`}>5 lat doświadczenia</h3>
+                    <p className={`${textSecondary} leading-relaxed`}>
+                      Od 5 lat tworzymy profesjonalne strony internetowe dla firm z różnych branż, zdobywając zaufanie klientów w Polsce i za granicą.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className={`font-bold text-2xl mb-2 ${textPrimary}`}>40+ zrealizowanych projektów</h3>
+                    <p className={`${textSecondary} leading-relaxed`}>
+                      Zrealizowaliśmy ponad 40 projektów, z których większość to zlecenia dla klientów zagranicznych z USA, Wielkiej Brytanii i Niemiec.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-pink-600 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className={`font-bold text-2xl mb-2 ${textPrimary}`}>Nowoczesne technologie</h3>
+                    <p className={`${textSecondary} leading-relaxed`}>
+                      Używamy najnowszych technologii jak React, Next.js i TypeScript, aby zapewnić szybkość, bezpieczeństwo i skalowalność Twojej strony.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-600 to-yellow-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className={`font-bold text-2xl mb-2 ${textPrimary}`}>Indywidualne podejście</h3>
+                    <p className={`${textSecondary} leading-relaxed`}>
+                      Każdy projekt traktujemy indywidualnie, dopasowując rozwiązania do potrzeb i budżetu klienta, zawsze dbając o najwyższą jakość.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative h-full flex items-center">
+              <div className={`relative ${isDark ? 'bg-slate-900/50 border-slate-1500' : 'bg-white/80 border-gray-200'} backdrop-blur-sm p-12 rounded-3xl border shadow-xl w-full`}>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="text-center">
+                    <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">5+</div>
+                    <div className={`${textSecondary} font-medium`}>Lat doświadczenia</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">40+</div>
+                    <div className={`${textSecondary} font-medium`}>Zrealizowanych projektów</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-black bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent mb-2">15+</div>
+                    <div className={`${textSecondary} font-medium`}>Krajów klientów</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-black bg-gradient-to-r from-orange-600 to-yellow-600 bg-clip-text text-transparent mb-2">98%</div>
+                    <div className={`${textSecondary} font-medium`}>Zadowolonych klientów</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What We Offer Section */}
+      <section className="relative py-32 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className={`text-4xl sm:text-5xl md:text-6xl font-black mb-6 ${isDark ? 'bg-gradient-to-r from-white to-gray-300' : 'bg-gradient-to-r from-gray-900 to-gray-700'} bg-clip-text text-transparent pb-2`}>
+              Co oferujemy
+            </h2>
+            <p className={`text-xl ${textSecondary} max-w-3xl mx-auto px-4`}>
+              Nie tworzymy tylko stron - tworzymy rozwiązania, które faktycznie działają i przynoszą rezultaty.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            {/* Problem Side */}
+            <div className="relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-3xl blur-xl group-hover:from-red-500/30 group-hover:to-orange-500/30 transition-all duration-500"></div>
+              <div className={`relative ${cardBg} backdrop-blur-sm rounded-3xl border ${isDark ? 'border-red-500/30 hover:border-red-400/50' : 'border-red-200 hover:border-red-300'} p-8 shadow-xl hover:shadow-2xl hover:shadow-red-500/20 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col`}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl blur-lg opacity-50 animate-pulse"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-r from-red-500 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 transform group-hover:rotate-12 transition-transform duration-500">
+                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className={`text-3xl font-black ${textPrimary} group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-red-400 group-hover:to-orange-400 group-hover:bg-clip-text transition-all duration-500`}>
+                      Problem
+                    </h3>
+                    <p className={`${textSecondary} text-sm font-medium`}>Co najczęściej psuje strony</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-6 flex-1 flex flex-col">
+                  <p className={`${textSecondary} leading-relaxed text-lg`}>
+                    Większość stron internetowych nie ma jednego konkretnego problemu. Ma ich kilka i razem sprawiają, że strona po prostu nie sprzedaje.
+                  </p>
+
+                  <div className="space-y-4">
+                    {[
+                      "nie prowadzi użytkownika do żadnej decyzji",
+                      "nie pokazuje jasno, co jest najważniejsze", 
+                      "rozprasza zamiast upraszczać",
+                      "zmusza klienta do domyślania się, co zrobić dalej"
+                    ].map((problem, i) => (
+                      <div key={i} className="flex items-start gap-3 group/item">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-red-500 rounded-full blur-md opacity-0 group-hover/item:opacity-30 transition-opacity"></div>
+                          <div className="relative w-3 h-3 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex-shrink-0 mt-1 transform group-hover/item:scale-125 transition-transform"></div>
+                        </div>
+                        <p className={`${textSecondary} group-hover/item:text-red-400 transition-colors`}>{problem}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="pt-6 border-t ${isDark ? 'border-red-500/30' : 'border-red-200'} mt-auto">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-lg flex items-center justify-center">
+                        <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6 6" />
+                        </svg>
+                      </div>
+                      <p className={`text-lg font-bold ${textPrimary} group-hover:text-red-400 transition-colors`}>
+                        Efekt: jeśli trzeba się domyślać, klient odpuszcza
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Solution Side */}
+            <div className="relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-3xl blur-xl group-hover:from-green-500/30 group-hover:to-emerald-500/30 transition-all duration-500"></div>
+              <div className={`relative ${cardBg} backdrop-blur-sm rounded-3xl border ${isDark ? 'border-green-500/30 hover:border-green-400/50' : 'border-green-200 hover:border-green-300'} p-8 shadow-xl hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-500 hover:-translate-y-2 h-full flex flex-col`}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur-lg opacity-50 animate-pulse"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 transform group-hover:rotate-12 transition-transform duration-500">
+                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className={`text-3xl font-black ${textPrimary} group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 group-hover:bg-clip-text transition-all duration-500`}>
+                      Rozwiązanie
+                    </h3>
+                    <p className={`${textSecondary} text-sm font-medium`}>Jak to naprawiamy</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-6 flex-1 flex flex-col">
+                  <p className={`${textSecondary} leading-relaxed text-lg`}>
+                    Naszym zadaniem jest to zmienić. Upraszczamy strony tak, aby faktycznie działały i przynosiły rezultaty.
+                  </p>
+
+                  <div className="space-y-4">
+                    {[
+                      "oferta była zrozumiała od pierwszych sekund",
+                      "kolejne kroki były oczywiste",
+                      "całość wspierała sprzedaż, a nie ją blokowała"
+                    ].map((solution, i) => (
+                      <div key={i} className="flex items-start gap-3 group/item">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-green-500 rounded-full blur-md opacity-0 group-hover/item:opacity-30 transition-opacity"></div>
+                          <div className="relative w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex-shrink-0 mt-1 transform group-hover/item:scale-125 transition-transform"></div>
+                        </div>
+                        <p className={`${textSecondary} group-hover/item:text-green-400 transition-colors`}>{solution}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="relative p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl border border-blue-500/30 group hover:border-blue-400/50 transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-2xl blur-xl"></div>
+                    <div className="relative">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        </div>
+                        <p className={`text-lg font-bold ${textPrimary} group-hover:text-blue-400 transition-colors`}>
+                          Nie chodzi o to, żeby strona była „ładniejsza”.
+                        </p>
+                      </div>
+                      <p className={`text-2xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-blue-300 group-hover:to-purple-300 transition-all duration-500`}>
+                        Chodzi o to, żeby działała.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t ${isDark ? 'border-green-500/30' : 'border-green-200'} mt-auto">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg flex items-center justify-center">
+                        <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                      </div>
+                      <p className={`${textSecondary} italic text-sm group-hover:text-green-400 transition-colors`}>
+                        Jeśli masz wrażenie, że na Twojej stronie coś jest nie tak,<br/>
+                        ale trudno wskazać co - to dokładnie tym się zajmujemy.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Reviews Carousel */}
       <section className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
@@ -479,6 +749,11 @@ export default function DesignStronLanding() {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section id="jak-to-dziala" className="relative py-32 px-6">
+        <HowItWorks isDark={isDark} />
+      </section>
+
       {/* FAQ */}
       <section className="relative py-32 px-6">
         <div className="max-w-4xl mx-auto">
@@ -505,7 +780,7 @@ export default function DesignStronLanding() {
                   <span className="pr-4">{faq.q}</span>
                   <div className="relative flex-shrink-0">
                     <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-0 group-hover:opacity-50 transition-opacity`} />
-                    <div className={`relative w-10 h-10 ${isDark ? 'bg-slate-800' : 'bg-gray-100'} rounded-full flex items-center justify-center transition-transform duration-300 ${openFaq === i ? 'rotate-180 bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}>
+                    <div className={`relative w-10 h-10 ${isDark ? 'bg-slate-1500' : 'bg-gray-100'} rounded-full flex items-center justify-center transition-transform duration-300 ${openFaq === i ? 'rotate-180 bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}>
                       <svg
                         className={`w-6 h-6 transition-all ${openFaq === i ? 'text-white' : isDark ? 'text-gray-400' : 'text-gray-600'}`}
                         fill="none"
@@ -523,7 +798,7 @@ export default function DesignStronLanding() {
                     openFaq === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className={`px-8 pb-8 ${textSecondary} leading-relaxed ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t pt-6`}>
+                  <div className={`px-8 pb-8 ${textSecondary} leading-relaxed ${isDark ? 'border-slate-1500' : 'border-gray-200'} border-t pt-6`}>
                     {faq.a}
                   </div>
                 </div>
@@ -555,10 +830,14 @@ export default function DesignStronLanding() {
                   <input
                     type="text"
                     value={form.name}
-                    onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setForm(prev => ({ ...prev, name: e.target.value }));
+                      if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.name ? 'border-red-500' : ''}`}
                     required
                   />
+                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
@@ -568,10 +847,14 @@ export default function DesignStronLanding() {
                   <input
                     type="email"
                     value={form.email}
-                    onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setForm(prev => ({ ...prev, email: e.target.value }));
+                      if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.email ? 'border-red-500' : ''}`}
                     required
                   />
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
                 <div>
                   <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
@@ -580,10 +863,14 @@ export default function DesignStronLanding() {
                   <input
                     type="tel"
                     value={form.phone}
-                    onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setForm(prev => ({ ...prev, phone: e.target.value }));
+                      if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.phone ? 'border-red-500' : ''}`}
                     placeholder="+48 123 456 789"
                   />
+                  {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                 </div>
 
                 <div>
@@ -592,8 +879,11 @@ export default function DesignStronLanding() {
                   </label>
                   <select
                     value={form.subject}
-                    onChange={(e) => setForm(prev => ({ ...prev, subject: e.target.value }))}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-white text-black border-gray-300' : 'bg-white text-black border-gray-300'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                    onChange={(e) => {
+                      setForm(prev => ({ ...prev, subject: e.target.value }));
+                      if (errors.subject) setErrors(prev => ({ ...prev, subject: undefined }));
+                    }}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.subject ? 'border-red-500' : ''}`}
                     required
                   >
                     <option value="">Wybierz temat</option>
@@ -603,6 +893,7 @@ export default function DesignStronLanding() {
                     <option value="wspolpraca">Współpraca</option>
                     <option value="inne">Inne</option>
                   </select>
+                  {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
                 </div>
               </div>
 
@@ -612,12 +903,16 @@ export default function DesignStronLanding() {
                 </label>
                 <textarea
                   value={form.message}
-                  onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={(e) => {
+                    setForm(prev => ({ ...prev, message: e.target.value }));
+                    if (errors.message) setErrors(prev => ({ ...prev, message: undefined }));
+                  }}
                   rows={6}
-                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.message ? 'border-red-500' : ''}`}
                   placeholder="Opisz swoją sprawę..."
                   required
                 />
+                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
               </div>
 
               <button
@@ -629,13 +924,13 @@ export default function DesignStronLanding() {
               </button>
             </form>
 
-            <div className={`mt-8 p-6 rounded-xl ${isDark ? 'bg-slate-800/50' : 'bg-gray-50/50'}`}>
+            <div className={`mt-8 p-6 rounded-xl ${isDark ? 'bg-slate-1500/50' : 'bg-gray-50/50'}`}>
               <h3 className={`text-lg font-bold mb-4 ${textPrimary}`}>Inne sposoby kontaktu</h3>
               <div className="space-y-2">
-                <p className={`${textSecondary}`}>
+                <p className={`${textPrimary}`}>
                   <strong>Email:</strong> kontakt@designstron.pl
                 </p>
-                <p className={`${textSecondary}`}>
+                <p className={`${textPrimary}`}>
                   <strong>Telefon:</strong> +48 123 456 789
                 </p>
                 <p className={`${textSecondary}`}>

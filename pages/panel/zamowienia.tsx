@@ -4,25 +4,43 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import OrderProgress from '@/components/OrderProgress';
 import NotificationCenter from '@/components/NotificationCenter';
 
-export default function UserSettings() {
-  const { data: session, status, update } = useSession();
+interface Order {
+  id: string;
+  status: string;
+  totalAmount: number;
+  createdAt: string;
+  // Informacje o hostingu
+  hostingPlan?: 'basic' | 'premium' | null;
+  hostingExpiresAt?: string | null;
+  domain?: string | null;
+  ssl?: boolean;
+  orderItems: {
+    name: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+  }[];
+  statusHistory: {
+    status: string;
+    comment: string;
+    createdAt: string;
+  }[];
+}
+
+export default function Zamowienia() {
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -57,82 +75,69 @@ export default function UserSettings() {
 
   useEffect(() => {
     if (session) {
-      setFormData(prev => ({
-        ...prev,
-        name: session.user?.name || '',
-        email: session.user?.email || ''
-      }));
+      fetchOrders();
     }
   }, [session]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setMessage('');
-
-    if (formData.newPassword && !formData.currentPassword) {
-      setMessage('Obecne hasło jest wymagane do zmiany hasła');
-      setIsLoading(false);
-      return;
-    }
-
-    // Walidacja haseł
-    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      setMessage('Nowe hasła nie są identyczne');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.newPassword && formData.newPassword.length < 6) {
-      setMessage('Nowe hasło musi mieć co najmniej 6 znaków');
-      setIsLoading(false);
-      return;
-    }
-
+  const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/user/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword
-        }),
-      });
-
-      const data = await response.json();
-
+      const response = await fetch('/api/orders');
       if (response.ok) {
-        setMessage('Ustawienia zostały zaktualizowane');
-
-        try {
-          await update({
-            user: {
-              name: formData.name,
-              email: formData.email,
-            },
-          } as any);
-        } catch {
-          // ignore session update errors
-        }
-
-        // Czyść pola haseł
-        setFormData(prev => ({
-          ...prev,
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        }));
-      } else {
-        setMessage(data.message || 'Wystąpił błąd podczas aktualizacji ustawień');
+        const data = await response.json();
+        setOrders(data);
       }
     } catch (error) {
-      setMessage('Wystąpił błąd serwera');
+      console.error('Błąd pobierania zamówień:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getTransactionType = (order: Order) => {
+    if (order.hostingPlan) {
+      if (order.orderItems.some(item => item.name.includes('Upgrade') || item.name.includes('zmian'))) {
+        return 'Zmiana planu hostingu';
+      } else if (order.orderItems.some(item => item.name.includes('Przedłużenie'))) {
+        return 'Przedłużenie hostingu';
+      } else {
+        return 'Aktywacja hostingu';
+      }
+    } else {
+      return 'Zamówienie strony';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'PAID':
+        return 'bg-green-100 text-green-800';
+      case 'IN_PROGRESS':
+        return 'bg-blue-100 text-blue-800';
+      case 'COMPLETED':
+        return 'bg-purple-100 text-purple-800';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Oczekuje na płatność';
+      case 'PAID':
+        return 'Opłacone';
+      case 'IN_PROGRESS':
+        return 'W realizacji';
+      case 'COMPLETED':
+        return 'Zakończone';
+      case 'CANCELLED':
+        return 'Anulowane';
+      default:
+        return status;
     }
   };
 
@@ -147,12 +152,12 @@ export default function UserSettings() {
   const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
   const textPrimary = isDark ? 'text-white' : 'text-gray-900';
 
-  if (status === 'loading') {
+  if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className={`min-h-screen ${bgClass} flex items-center justify-center`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Ładowanie...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div>
+          <p className={`mt-4 ${textSecondary}`}>Ładowanie...</p>
         </div>
       </div>
     );
@@ -202,6 +207,7 @@ export default function UserSettings() {
               Panel
             </Link>
             <Link
+              id="order-button"
               href="/panel/zamow"
               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
             >
@@ -265,20 +271,20 @@ export default function UserSettings() {
                         Ustawienia powiadomień
                       </div>
                     </Link>
-                      
-                      <Link
-                        href="/panel/zamowienia"
-                        className={`block px-4 py-2 text-sm ${isDark ? 'text-gray-300 hover:bg-slate-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
-                        onClick={() => setIsProfileDropdownOpen(false)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                          </svg>
-                          Twoje zamówienia
-                        </div>
-                      </Link>
-                      
+                    
+                    <Link
+                      href="/panel/zamowienia"
+                      className={`block px-4 py-2 text-sm ${isDark ? 'text-gray-300 hover:bg-slate-700 hover:text-white' : 'text-gray-700 hover:bg-gray-100'} transition-colors`}
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Twoje zamówienia
+                      </div>
+                    </Link>
+                    
                     <button
                       onClick={() => {
                         signOut();
@@ -335,6 +341,9 @@ export default function UserSettings() {
               >
                 Zamów stronę
               </Link>
+              <div className="py-3 px-4">
+                <NotificationCenter />
+              </div>
               
               {/* Mobile Profile Section */}
               <div className={`border-t ${isDark ? 'border-slate-700' : 'border-gray-200'} pt-3`}>
@@ -356,6 +365,13 @@ export default function UserSettings() {
                 >
                   Ustawienia powiadomień
                 </Link>
+                <Link
+                  href="/panel/zamowienia"
+                  className={`block py-3 px-4 rounded-lg ${isDark ? 'text-gray-300 hover:text-white hover:bg-slate-800/50' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'} font-medium transition-colors`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Twoje zamówienia
+                </Link>
                 <button
                   onClick={() => {
                     signOut();
@@ -373,141 +389,187 @@ export default function UserSettings() {
 
       {/* Main Content */}
       <div className="relative pt-32 px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="mb-8 animate-fade-in">
             <h1 className={`text-4xl font-black mb-2 ${textPrimary}`}>
-              Ustawienia <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">profilu</span>
+              Twoje <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">zamówienia</span>
             </h1>
-            <p className={`${textSecondary} text-lg`}>Zarządzaj swoimi danymi osobowymi i hasłem</p>
+            <p className={`${textSecondary} text-lg`}>Zarządzaj wszystkimi swoimi zamówieniami w jednym miejscu.</p>
           </div>
 
-          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 animate-fade-in-up`} style={{ animationDelay: '0.1s' }}>
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Informacje podstawowe */}
-              <div>
-                <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Informacje podstawowe</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
-                      Imię i nazwisko
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
-                      placeholder="Jan Kowalski"
-                    />
-                  </div>
-
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
-                      placeholder="twoj@email.com"
-                    />
-                  </div>
-                </div>
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-6 animate-fade-in-up`} style={{ animationDelay: '0.1s' }}>
+            <div className="flex items-center">
+              <div className={`p-3 ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'} rounded-xl`}>
+                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
               </div>
-
-              {/* Zmiana hasła */}
-              <div className="border-t border-gray-300/50 pt-8">
-                <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Zmiana hasła</h2>
-                <div className="space-y-6">
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
-                      Obecne hasło
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.currentPassword}
-                      onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
-                      placeholder="••••••••"
-                    />
-                  </div>
-
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
-                      Nowe hasło
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.newPassword}
-                      onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
-                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
-                      placeholder="••••••••"
-                      minLength={6}
-                    />
-                    <p className={`${textSecondary} text-sm mt-2`}>Minimum 6 znaków</p>
-                  </div>
-
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${textPrimary}`}>
-                      Potwierdź nowe hasło
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                      className={`w-full px-4 py-3 ${isDark ? 'bg-slate-800/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300`}
-                      placeholder="••••••••"
-                      minLength={6}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Komunikat */}
-              {message && (
-                <div className={`p-4 rounded-xl border-2 ${
-                  message.includes('błąd') || message.includes('nie')
-                    ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                    : 'bg-green-500/10 border-green-500/30 text-green-400'
-                }`}>
-                  {message}
-                </div>
-              )}
-
-              {/* Przyciski */}
-              <div className="flex justify-end space-x-4">
-                <Link
-                  href="/panel"
-                  className={`px-6 py-3 border-2 border-gray-300/50 rounded-xl ${isDark ? 'text-gray-300 hover:bg-gray-800/50' : 'text-gray-700 hover:bg-gray-100'} transition-all duration-300`}
-                >
-                  Anuluj
-                </Link>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
-                >
-                  {isLoading ? 'Zapisywanie...' : 'Zapisz zmiany'}
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Sekcja niebezpieczeństwa */}
-          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-8 mt-8 animate-fade-in-up`} style={{ animationDelay: '0.2s' }}>
-            <h2 className={`text-2xl font-bold mb-6 ${textPrimary}`}>Niebezpieczeństwo</h2>
-            <div className="space-y-6">
-              <div className={`p-6 rounded-xl border-2 border-red-500/30 bg-red-500/10`}>
-                <h3 className={`font-bold text-lg mb-2 text-red-400`}>Usuń konto</h3>
-                <p className={`${textSecondary} text-sm mb-4`}>
-                  Usunięcie konta jest nieodwracalne. Wszystkie Twoje zamówienia i dane zostaną trwale usunięte.
-                </p>
-                <button className="bg-red-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-red-700 transition-all duration-300 transform hover:scale-[1.02]">
-                  Usuń konto
-                </button>
+              <div className="ml-4">
+                <p className={`${textSecondary} text-sm`}>Wszystkie</p>
+                <p className={`text-2xl font-bold ${textPrimary}`}>{orders.length}</p>
               </div>
             </div>
           </div>
+
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-6 animate-fade-in-up`} style={{ animationDelay: '0.2s' }}>
+            <div className="flex items-center">
+              <div className={`p-3 ${isDark ? 'bg-yellow-500/20' : 'bg-yellow-100'} rounded-xl`}>
+                <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className={`${textSecondary} text-sm`}>Oczekujące</p>
+                <p className={`text-2xl font-bold ${textPrimary}`}>
+                  {orders.filter(o => o.status === 'PENDING').length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-6 animate-fade-in-up`} style={{ animationDelay: '0.3s' }}>
+            <div className="flex items-center">
+              <div className={`p-3 ${isDark ? 'bg-green-500/20' : 'bg-green-100'} rounded-xl`}>
+                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className={`${textSecondary} text-sm`}>Opłacone</p>
+                <p className={`text-2xl font-bold ${textPrimary}`}>
+                  {orders.filter(o => o.status === 'PAID').length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-6 animate-fade-in-up`} style={{ animationDelay: '0.4s' }}>
+            <div className="flex items-center">
+              <div className={`p-3 ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'} rounded-xl`}>
+                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className={`${textSecondary} text-sm`}>W realizacji</p>
+                <p className={`text-2xl font-bold ${textPrimary}`}>
+                  {orders.filter(o => o.status === 'IN_PROGRESS').length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-6 animate-fade-in-up`} style={{ animationDelay: '0.5s' }}>
+            <div className="flex items-center">
+              <div className={`p-3 ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'} rounded-xl`}>
+                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className={`${textSecondary} text-sm`}>Zakończone</p>
+                <p className={`text-2xl font-bold ${textPrimary}`}>
+                  {orders.filter(o => o.status === 'COMPLETED').length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className={`${cardBg} backdrop-blur-xl rounded-2xl border p-6 animate-fade-in-up`} style={{ animationDelay: '0.6s' }}>
+            <div className="flex items-center">
+              <div className={`p-3 ${isDark ? 'bg-red-500/20' : 'bg-red-100'} rounded-xl`}>
+                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className={`${textSecondary} text-sm`}>Anulowane</p>
+                <p className={`text-2xl font-bold ${textPrimary}`}>
+                  {orders.filter(o => o.status === 'CANCELLED').length}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Orders Table */}
+        <div id="orders-section" className={`${cardBg} backdrop-blur-xl rounded-2xl border animate-fade-in-up`} style={{ animationDelay: '0.4s' }}>
+          <div className="p-6 border-b border-gray-300/50">
+            <h2 className={`text-xl font-bold ${textPrimary}`}>Historia zamówień</h2>
+          </div>
+          
+          {orders.length === 0 ? (
+            <div className="p-8 text-center">
+              <div className={`w-16 h-16 ${isDark ? 'bg-gray-800/50' : 'bg-gray-100'} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h3 className={`text-lg font-bold ${textPrimary} mb-2`}>Brak zamówień</h3>
+              <p className={`${textSecondary} mb-4`}>Nie masz jeszcze żadnych zamówień.</p>
+              <Link href="/panel/zamow" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.02]">
+                Zamów pierwszą stronę
+              </Link>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-300/50">
+                <thead className={`${isDark ? 'bg-slate-800/50' : 'bg-gray-50'}`}>
+                  <tr>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                      Zamówienie
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                      Data
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                      Status
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider ${textSecondary}`}>
+                      Kwota
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className={`${isDark ? 'bg-slate-900/50' : 'bg-white'} divide-y divide-gray-300/50`}>
+                  {orders.map((order) => (
+                    <tr key={order.id} className={`hover:${isDark ? 'bg-slate-800/30' : 'bg-gray-50'} transition-colors`}>
+                      <td className={`px-4 py-4 whitespace-nowrap`}>
+                        <div>
+                          <div className={`text-sm font-bold ${textPrimary}`}>
+                            #{order.id.slice(-8)}
+                          </div>
+                          <div className={`text-xs ${textSecondary}`}>
+                            {getTransactionType(order)}
+                          </div>
+                        </div>
+                      </td>
+                      <td className={`px-4 py-4 whitespace-nowrap text-sm ${textSecondary}`}>
+                        <div>
+                          <div>{new Date(order.createdAt).toLocaleDateString('pl-PL')}</div>
+                          <div className={`text-xs ${textSecondary}`}>
+                            {new Date(order.createdAt).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-bold rounded-full ${getStatusColor(order.status)}`}>
+                          {getStatusText(order.status)}
+                        </span>
+                      </td>
+                      <td className={`px-4 py-4 whitespace-nowrap`}>
+                        <div className={`text-sm font-bold ${textPrimary}`}>
+                          {order.totalAmount.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' })}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
         </div>
       </div>
 

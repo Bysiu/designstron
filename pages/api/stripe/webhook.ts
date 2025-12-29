@@ -40,7 +40,7 @@ export default async function handler(
         const session = event.data.object as Stripe.Checkout.Session;
         
         if (session.metadata?.orderId) {
-          // Aktualizacja statusu zamówienia
+          // Standardowa płatność - webhook już obsługuje
           await prisma.order.update({
             where: { id: session.metadata.orderId },
             data: { 

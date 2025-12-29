@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import portfolioData from './portfolioData.json';
 
 interface ReviewsCarouselProps {
@@ -9,7 +9,7 @@ interface ReviewsCarouselProps {
   textPrimary: string;
 }
 
-export default function ReviewsCarousel({ isDark, textSecondary, textPrimary }: ReviewsCarouselProps) {
+function ReviewsCarousel({ isDark, textSecondary, textPrimary }: ReviewsCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const reviews = portfolioData.reviews;
@@ -126,3 +126,5 @@ export default function ReviewsCarousel({ isDark, textSecondary, textPrimary }: 
     </div>
   );
 }
+
+export default memo(ReviewsCarousel);

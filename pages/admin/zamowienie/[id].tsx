@@ -19,6 +19,18 @@ interface Order {
   totalAmount: number;
   createdAt: string;
   customerPhone?: string | null;
+  // Pola formularza zamówienia
+  nazwaFirmy?: string | null;
+  branża?: string | null;
+  opisProjektu?: string | null;
+  kolorystyka?: string | null;
+  stronyPrzykładowe?: string[] | null;
+  logo?: boolean | null;
+  teksty?: boolean | null;
+  zdjecia?: boolean | null;
+  terminRealizacji?: string | null;
+  budzet?: string | null;
+  uwagi?: string | null;
   user: {
     name: string | null;
     email: string;
@@ -348,6 +360,87 @@ export default function AdminOrderDetails() {
                     </span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Szczegóły formularza zamówienia */}
+            <div className={`${cardBg} backdrop-blur-sm rounded-2xl border p-6`}>
+              <h2 className={`text-lg font-semibold ${textPrimary} mb-4`}>Szczegóły projektu</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {order.nazwaFirmy && (
+                  <div>
+                    <label className={`text-sm font-medium ${textSecondary}`}>Nazwa firmy</label>
+                    <p className={`${textPrimary} mt-1`}>{order.nazwaFirmy}</p>
+                  </div>
+                )}
+                {order.branża && (
+                  <div>
+                    <label className={`text-sm font-medium ${textSecondary}`}>Branża</label>
+                    <p className={`${textPrimary} mt-1`}>{order.branża}</p>
+                  </div>
+                )}
+                {order.opisProjektu && (
+                  <div className="md:col-span-2">
+                    <label className={`text-sm font-medium ${textSecondary}`}>Opis projektu</label>
+                    <p className={`${textPrimary} mt-1 whitespace-pre-wrap`}>{order.opisProjektu}</p>
+                  </div>
+                )}
+                {order.kolorystyka && (
+                  <div>
+                    <label className={`text-sm font-medium ${textSecondary}`}>Preferowana kolorystyka</label>
+                    <p className={`${textPrimary} mt-1`}>{order.kolorystyka}</p>
+                  </div>
+                )}
+                {order.terminRealizacji && (
+                  <div>
+                    <label className={`text-sm font-medium ${textSecondary}`}>Termin realizacji</label>
+                    <p className={`${textPrimary} mt-1`}>{order.terminRealizacji}</p>
+                  </div>
+                )}
+                {order.budzet && (
+                  <div>
+                    <label className={`text-sm font-medium ${textSecondary}`}>Budżet</label>
+                    <p className={`${textPrimary} mt-1`}>{order.budzet}</p>
+                  </div>
+                )}
+                {order.stronyPrzykładowe && order.stronyPrzykładowe.length > 0 && (
+                  <div className="md:col-span-2">
+                    <label className={`text-sm font-medium ${textSecondary}`}>Strony przykładowe</label>
+                    <div className={`${textPrimary} mt-1`}>
+                      {order.stronyPrzykładowe.map((url, index) => (
+                        <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline block">
+                          {url}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="md:col-span-2">
+                  <label className={`text-sm font-medium ${textSecondary}`}>Dodatkowe wymagania</label>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {order.logo && (
+                      <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                        Projekt logo
+                      </span>
+                    )}
+                    {order.teksty && (
+                      <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">
+                        Pisanie tekstów
+                      </span>
+                    )}
+                    {order.zdjecia && (
+                      <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
+                        Zdjęcia do strony
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {order.uwagi && (
+                  <div className="md:col-span-2">
+                    <label className={`text-sm font-medium ${textSecondary}`}>Dodatkowe uwagi</label>
+                    <p className={`${textPrimary} mt-1 whitespace-pre-wrap`}>{order.uwagi}</p>
+                  </div>
+                )}
               </div>
             </div>
 

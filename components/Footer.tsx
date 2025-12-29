@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import Link from 'next/link';
 import { ThemeProps } from '@/types';
 import Image from 'next/image';
@@ -7,7 +7,7 @@ type FooterProps = ThemeProps & {
   currentPage?: string;
 };
 
-export default function Footer({ isDark, currentPage = 'home' }: FooterProps) {
+export default memo(function Footer({ isDark, currentPage = 'home' }: FooterProps) {
   const [copiedText, setCopiedText] = useState<string>('');
 
   const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
@@ -31,7 +31,7 @@ export default function Footer({ isDark, currentPage = 'home' }: FooterProps) {
     <footer className={`relative py-16 px-4 sm:px-6 ${borderColor} border-t`}>
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-12">
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
             <h3 className="font-bold text-2xl mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               DesignStron.pl
             </h3>
@@ -41,7 +41,7 @@ export default function Footer({ isDark, currentPage = 'home' }: FooterProps) {
             </p>
           </div>
           
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
             <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Szybkie linki</h4>
             <div className="grid grid-cols-2 gap-2">
               {currentPage === 'home' ? (
@@ -102,7 +102,25 @@ export default function Footer({ isDark, currentPage = 'home' }: FooterProps) {
             </div>
           </div>
           
-          <div className="md:col-span-4">
+          <div className="md:col-span-3">
+            <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Prawne</h4>
+            <div className="space-y-2">
+              <Link
+                href="/regulamin"
+                className={`block py-2 ${textSecondary} ${hoverText} transition-colors`}
+              >
+                Regulamin
+              </Link>
+              <Link
+                href="/polityka-prywatnosci"
+                className={`block py-2 ${textSecondary} ${hoverText} transition-colors`}
+              >
+                Polityka prywatności
+              </Link>
+            </div>
+          </div>
+          
+          <div className="md:col-span-3">
             <h4 className={`font-bold text-lg mb-4 ${textPrimary}`}>Kontakt</h4>
             <div className={`space-y-3 ${textSecondary}`}>
               <button
@@ -160,4 +178,4 @@ export default function Footer({ isDark, currentPage = 'home' }: FooterProps) {
       </div>
     </footer>
   );
-}
+});

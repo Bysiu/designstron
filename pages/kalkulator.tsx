@@ -246,12 +246,12 @@ export default function Kalkulator() {
 
       <NavbarAuth isDark={isDark} setIsDark={setIsDark} currentPage="kalkulator" />
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-20 pb-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className={`text-4xl md:text-6xl font-black mb-4 ${textPrimary}`}>
+          <h1 className={`text-4xl md:text-6xl font-black ${textPrimary}`}>
             Kalkulator
-            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent pb-4">
               Wyceny
             </span>
           </h1>

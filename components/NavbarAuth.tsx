@@ -1,18 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import NotificationCenter from '@/components/NotificationCenter';
 import { ThemeToggleProps } from '@/types';
 
 type NavbarProps = ThemeToggleProps & {
   currentPage?: string;
 };
 
-export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: NavbarProps) {
+const NavbarAuth = memo(function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: NavbarProps) {
   const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -23,7 +27,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
 
   const bgClass = isDark 
     ? 'bg-slate-900/95 backdrop-blur-2xl shadow-2xl shadow-purple-500/10' 
-    : 'bg-white/95 backdrop-blur-2xl shadow-xl';
+    : 'bg-gray-900/95 backdrop-blur-2xl shadow-xl';
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -33,9 +37,28 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
     setIsMobileMenuOpen(false);
   };
 
+  if (!mounted) {
+    return (
+      <nav className="fixed top-0 w-full z-50 bg-slate-950 h-20">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="w-32 h-8 bg-slate-800 rounded animate-pulse"></div>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-8">
+              <div className="w-16 h-6 bg-slate-800 rounded animate-pulse"></div>
+              <div className="w-20 h-6 bg-slate-800 rounded animate-pulse"></div>
+              <div className="w-16 h-6 bg-slate-800 rounded animate-pulse"></div>
+              <div className="w-16 h-6 bg-slate-800 rounded animate-pulse"></div>
+            </div>
+            <div className="w-20 h-8 bg-slate-800 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      isScrolled || isMobileMenuOpen ? bgClass : 'bg-transparent'
+      isScrolled || isMobileMenuOpen ? bgClass : 'bg-gray-900/50'
     }`}>
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="relative group">
@@ -52,25 +75,25 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
               <>
                 <a
                   href="#oferta"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Oferta
                 </a>
                 <Link
                   href="/portfolio"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Portfolio
                 </Link>
                 <Link
                   href="/kalkulator"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Kalkulator
                 </Link>
                 <a
                   href="#kontakt"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Kontakt
                 </a>
@@ -79,31 +102,31 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
               <>
                 <Link
                   href="/"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Strona główna
                 </Link>
                 <Link
                   href="/#oferta"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Oferta
                 </Link>
                 <Link
                   href="/portfolio"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Portfolio
                 </Link>
                 <Link
                   href="/kalkulator"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Kalkulator
                 </Link>
                 <Link
                   href="/#kontakt"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Kontakt
                 </Link>
@@ -115,6 +138,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
               <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
             ) : session ? (
               <div className="flex items-center gap-3">
+                <NotificationCenter />
                 <Link
                   href="/panel"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
@@ -131,7 +155,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                 )}
                 <button
                   onClick={() => signOut()}
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Wyloguj
                 </button>
@@ -140,7 +164,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
               <div className="flex items-center gap-3">
                 <Link
                   href="/auth/signin"
-                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium transition-colors`}
+                  className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}
                 >
                   Zaloguj
                 </Link>
@@ -157,7 +181,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
           {/* Mobile menu button */}
           <button
             onClick={toggleMobileMenu}
-            className={`md:hidden ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
+            className={`md:hidden ${isDark ? 'text-gray-200' : 'text-gray-300'}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMobileMenuOpen ? (
@@ -172,7 +196,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className={`md:hidden ${isDark ? 'bg-slate-900/95' : 'bg-white/95'} backdrop-blur-2xl`}>
+        <div className={`md:hidden ${isDark ? 'bg-slate-900/95' : 'bg-gray-900/95'} backdrop-blur-2xl`}>
           <div className="px-6 py-4 space-y-2">
             {currentPage === 'home' ? (
               <>
@@ -181,7 +205,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Oferta
                   </div>
                 </a>
@@ -190,7 +214,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Portfolio
                   </div>
                 </Link>
@@ -199,7 +223,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Kalkulator
                   </div>
                 </Link>
@@ -208,7 +232,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Kontakt
                   </div>
                 </a>
@@ -220,7 +244,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Strona główna
                   </div>
                 </Link>
@@ -229,7 +253,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Oferta
                   </div>
                 </Link>
@@ -238,7 +262,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Portfolio
                   </div>
                 </Link>
@@ -247,7 +271,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Kalkulator
                   </div>
                 </Link>
@@ -256,7 +280,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium`}>
                     Kontakt
                   </div>
                 </Link>
@@ -291,7 +315,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   }}
                   className="block w-full text-left py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}>
                     Wyloguj
                   </div>
                 </button>
@@ -303,7 +327,7 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
                   className="block py-3 px-4 rounded-lg hover:bg-slate-800/50 transition-colors"
                   onClick={closeMobileMenu}
                 >
-                  <div className={`${isDark ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} font-medium`}>
+                  <div className={`${isDark ? 'text-gray-200 hover:text-white' : 'text-gray-300 hover:text-white'} font-medium transition-colors`}>
                     Zaloguj
                   </div>
                 </Link>
@@ -321,4 +345,6 @@ export default function NavbarAuth({ isDark, setIsDark, currentPage = 'home' }: 
       )}
     </nav>
   );
-}
+});
+
+export default NavbarAuth;
