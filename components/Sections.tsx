@@ -112,7 +112,7 @@ const offers = [
       'Formularz kontaktowy z powiadomieniami',
       'Integracja z Google Maps',
       'Szybkie ładowanie strony',
-      '14 dni wsparcia technicznego'
+      '7 dni wsparcia technicznego'
     ],
     icon: '🎨',
     color: 'blue'
@@ -131,7 +131,7 @@ const offers = [
       'Integracja z Google Analytics',
       'Animacje UI i mikrointerakcje',
       'Optymalizacja pod konwersję',
-      '30 dni wsparcia technicznego'
+      '14 dni wsparcia technicznego'
     ],
     featured: true,
     icon: '🚀',
@@ -151,7 +151,7 @@ const offers = [
       'Maksymalna optymalizacja wydajności',
       'Rozbudowane formularze leadowe',
       'Integracje (Analytics, Meta, narzędzia marketingowe)',
-      'Priorytetowe wsparcie techniczne – 60 dni'
+      'Priorytetowe wsparcie techniczne – 30 dni'
     ],
     icon: '💎',
     color: 'pink'
