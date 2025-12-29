@@ -221,7 +221,7 @@ const offers = [
     : 'bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900';
   
   const cardBg = isDark 
-    ? 'bg-slate-900/50 border-slate-1500' 
+    ? 'bg-slate-900/50 border-slate-800' 
     : 'bg-white/80 border-gray-200';
 
   const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
@@ -384,7 +384,7 @@ const offers = [
                   offer.featured
                     ? 'bg-gradient-to-br from-blue-600 to-purple-600 shadow-2xl shadow-purple-500/30 scale-105'
                     : isDark
-                    ? 'bg-slate-900/50 backdrop-blur-sm border border-slate-1500 hover:border-slate-700'
+                    ? 'bg-slate-900/50 backdrop-blur-sm border border-slate-800 hover:border-slate-700'
                     : 'bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-gray-300 hover:shadow-xl'
                 }`}
               >
@@ -547,7 +547,7 @@ const offers = [
             </div>
 
             <div className="relative h-full flex items-center">
-              <div className={`relative ${isDark ? 'bg-slate-900/50 border-slate-1500' : 'bg-white/80 border-gray-200'} backdrop-blur-sm p-12 rounded-3xl border shadow-xl w-full`}>
+              <div className={`relative ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white/80 border-gray-200'} backdrop-blur-sm p-12 rounded-3xl border shadow-xl w-full`}>
                 <div className="grid grid-cols-2 gap-8">
                   <div className="text-center">
                     <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">5+</div>
@@ -789,7 +789,7 @@ const offers = [
                   <span className="pr-4">{faq.q}</span>
                   <div className="relative flex-shrink-0">
                     <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-lg opacity-0 group-hover:opacity-50 transition-opacity`} />
-                    <div className={`relative w-10 h-10 ${isDark ? 'bg-slate-1500' : 'bg-gray-100'} rounded-full flex items-center justify-center transition-transform duration-300 ${openFaq === i ? 'rotate-180 bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}>
+                    <div className={`relative w-10 h-10 ${isDark ? 'bg-slate-900' : 'bg-gray-100'} rounded-full flex items-center justify-center transition-transform duration-300 ${openFaq === i ? 'rotate-180 bg-gradient-to-r from-blue-500 to-purple-500' : ''}`}>
                       <svg
                         className={`w-6 h-6 transition-all ${openFaq === i ? 'text-white' : isDark ? 'text-gray-400' : 'text-gray-600'}`}
                         fill="none"
@@ -807,7 +807,7 @@ const offers = [
                     openFaq === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className={`px-8 pb-8 ${textSecondary} leading-relaxed ${isDark ? 'border-slate-1500' : 'border-gray-200'} border-t pt-6`}>
+                  <div className={`px-8 pb-8 ${textSecondary} leading-relaxed ${isDark ? 'border-slate-800' : 'border-gray-200'} border-t pt-6`}>
                     {faq.a}
                   </div>
                 </div>
@@ -843,7 +843,7 @@ const offers = [
                       setForm(prev => ({ ...prev, name: e.target.value }));
                       if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.name ? 'border-red-500' : ''}`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.name ? 'border-red-500' : ''}`}
                     required
                   />
                   {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
@@ -860,7 +860,7 @@ const offers = [
                       setForm(prev => ({ ...prev, email: e.target.value }));
                       if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.email ? 'border-red-500' : ''}`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.email ? 'border-red-500' : ''}`}
                     required
                   />
                   {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -876,7 +876,7 @@ const offers = [
                       setForm(prev => ({ ...prev, phone: e.target.value }));
                       if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.phone ? 'border-red-500' : ''}`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.phone ? 'border-red-500' : ''}`}
                     placeholder="+48 123 456 789"
                   />
                   {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -892,7 +892,7 @@ const offers = [
                       setForm(prev => ({ ...prev, subject: e.target.value }));
                       if (errors.subject) setErrors(prev => ({ ...prev, subject: undefined }));
                     }}
-                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.subject ? 'border-red-500' : ''}`}
+                    className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.subject ? 'border-red-500' : ''}`}
                     required
                   >
                     <option value="">Wybierz temat</option>
@@ -917,7 +917,7 @@ const offers = [
                     if (errors.message) setErrors(prev => ({ ...prev, message: undefined }));
                   }}
                   rows={6}
-                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-1500/80 border-slate-700/50 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.message ? 'border-red-500' : ''}`}
+                  className={`w-full px-4 py-3 ${isDark ? 'bg-slate-900/60 border-slate-700/60 text-white placeholder-gray-400' : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'} border-2 rounded-xl text-base focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 ${errors.message ? 'border-red-500' : ''}`}
                   placeholder="Opisz swoją sprawę..."
                   required
                 />
@@ -933,7 +933,7 @@ const offers = [
               </button>
             </form>
 
-            <div className={`mt-8 p-6 rounded-xl ${isDark ? 'bg-slate-1500/50' : 'bg-gray-50/50'}`}>
+            <div className={`mt-8 p-6 rounded-xl ${isDark ? 'bg-slate-900/50' : 'bg-gray-50/50'}`}>
               <h3 className={`text-lg font-bold mb-4 ${textPrimary}`}>Inne sposoby kontaktu</h3>
               <div className="space-y-2">
                 <p className={`${textPrimary}`}>
