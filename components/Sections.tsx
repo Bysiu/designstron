@@ -99,55 +99,64 @@ export default function DesignStronLanding() {
     },
   ];
 
-  const offers = [
-    {
-      title: 'Strona wizytówka',
-      price: '1500',
-      description: 'Idealne rozwiązanie dla małych firm i osób rozpoczynających działalność. Wszystko czego potrzebujesz do prezentacji w sieci.',
-      features: [
-        'Responsywny design dostosowany do marki',
-        'Formularz kontaktowy z powiadomieniami',
-        'Integracja z Google Maps',
-        'Podstawowe SEO i optymalizacja',
-        'Panel administracyjny',
-        '30 dni wsparcia technicznego'
-      ],
-      icon: '🎨',
-      color: 'blue'
-    },
-    {
-      title: 'Strona Professional',
-      price: '1500',
-      description: 'Rozbudowana strona z podstronami, prezentacją usług i realizacji. Kompleksowe rozwiązanie dla rozwijających się firm.',
-      features: [
-        'Wielostronicowa struktura (do 10 podstron)',
-        'Sekcja portfolio z galerią',
-        'Blog/Aktualności z systemem CMS',
-        'Zaawansowane SEO i analytics',
-        'Integracje z mediami społecznościowymi',
-        'Panel zarządzania treścią',
-        '60 dni wsparcia + szkolenie'
-      ],
-      featured: true,
-      icon: '🚀',
-      color: 'purple'
-    },
-    {
-      title: 'Strona Premium',
-      price: '5000',
-      description: 'Strona nastawiona na sprzedaż lub pozyskiwanie zapytań. Maksymalna konwersja to nasz priorytet.',
-      features: [
-        'Optymalizacja konwersji (CRO)',
-        'A/B testing ready',
-        'Integracja z Google Ads i Facebook',
-        'Google Analytics 4',
-        'Przyciski CTA i formularze leadowe',
-        '45 dni wsparcia'
-      ],
-      icon: '💎',
-      color: 'pink'
-    },
-  ];
+const offers = [
+  {
+    title: 'Strona Basic',
+    price: '1200',
+    description:
+      'Idealny start dla małych firm i osób rozpoczynających działalność. Prosta, nowoczesna strona, która jasno prezentuje ofertę i buduje wiarygodność w sieci.',
+    features: [
+      'Do 3 podstron (np. Strona główna, Oferta, Kontakt)',
+      'Nowoczesny i responsywny design',
+      'Podstawowa optymalizacja SEO',
+      'Formularz kontaktowy z powiadomieniami',
+      'Integracja z Google Maps',
+      'Szybkie ładowanie strony',
+      '14 dni wsparcia technicznego'
+    ],
+    icon: '🎨',
+    color: 'blue'
+  },
+  {
+    title: 'Strona Standard',
+    price: '2000',
+    description:
+      'Kompleksowa strona firmowa dla marek, które chcą wyglądać profesjonalnie i realnie pozyskiwać klientów. Najlepszy balans ceny i możliwości.',
+    features: [
+      'Do 5 podstron',
+      'Indywidualny projekt dopasowany do marki',
+      'Profesjonalna optymalizacja SEO',
+      'Sekcja portfolio / realizacji',
+      'Formularze kontaktowe i CTA',
+      'Integracja z Google Analytics',
+      'Animacje UI i mikrointerakcje',
+      'Optymalizacja pod konwersję',
+      '30 dni wsparcia technicznego'
+    ],
+    featured: true,
+    icon: '🚀',
+    color: 'purple'
+  },
+  {
+    title: 'Strona Premium',
+    price: '4000',
+    description:
+      'Zaawansowana strona dla firm, które chcą wyróżnić się na rynku, zbudować silną markę i mieć maksymalnie dopracowaną prezentację online.',
+    features: [
+      'Do 10 podstron',
+      'Unikalny design klasy premium',
+      'Zaawansowane SEO pod pozycjonowanie',
+      'Profesjonalne animacje i efekty scroll',
+      'Dopasowanie UX/UI pod użytkownika',
+      'Maksymalna optymalizacja wydajności',
+      'Rozbudowane formularze leadowe',
+      'Integracje (Analytics, Meta, narzędzia marketingowe)',
+      'Priorytetowe wsparcie techniczne – 60 dni'
+    ],
+    icon: '💎',
+    color: 'pink'
+  }
+];
 
   const steps = [
     { 
@@ -300,7 +309,7 @@ export default function DesignStronLanding() {
           {/* Stats */}
           <div className="mt-24 grid grid-cols-3 gap-8 max-w-3xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
             {[
-              { num: '50+', label: 'Zadowolonych klientów' },
+              { num: '50+', label: 'Zrealizowanych projektów' },
               { num: '7-14', label: 'Dni realizacji' },
               { num: '100%', label: 'Satysfakcji' }
             ].map((stat, i) => (
